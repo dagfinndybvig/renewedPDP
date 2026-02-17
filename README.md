@@ -1,9 +1,15 @@
+
+
 # renewedPDP
 
 `renewedPDP` is a preservation/portability copy of the classic PDP software associated with:
 
 - *Explorations in Parallel Distributed Processing: A Handbook of Models, Programs, and Exercises*
 - J. L. McClelland and D. E. Rumelhart
+
+![handbook](https://github.com/user-attachments/assets/756591a1-e7b8-48c4-b69c-25d4f1219791)
+
+Read it here https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
 The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while making it practical to build and run on modern Linux.
 
