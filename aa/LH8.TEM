@@ -1,0 +1,28 @@
+define: layout
+         $                                                    pname ipattern
+                                                                $   $
+end
+cpname	label		0	6	0	h	8
+cpname	variable	1	6	7	cpname	-8	1.0
+cycleno	label		0	7	0	h	8
+cycleno	variable	1	7	7	cycleno	8	1.
+epochno	label		0	8	0	h	8
+epochno	variable	1	8	7	epochno	8	1.0
+ndp	label		0	9	0	h	8
+ndp	floatvar	1	9	7	ndp	8	1.0
+nvl	label		0	10	0	h	8
+nvl	floatvar	1	10	7	nvl	8	1.0
+vcor	label		0	11	0	h	8
+vcor	floatvar	1	11	7	vcor	8 	1.0 
+prioract label		0	15	8	h	8
+prioract vector		2	15	20	prioract h 3	100.0 0 16
+extinp	label		0	5	49	h	3
+extinp	vector		2	6	49	extinput v  3 	100.0 0 16
+intinp	label		0	5	53	h	3
+intinp 	vector		2	6	53	intinput v 3	100.0 0 16
+activation label	0	5	57	h	3
+activation vector	2	6	57	activation v 3	100.0 0 16
+weights	label		0	5	29	h	10
+weights	 matrix		3	6	20	weight	h 3	100.0 0 8 0 8
+env.pname vector	0	$	1	pname    v 3      0 0 8
+env.ipat matrix		0	$	2	ipattern h 1	1.0 0 8 0 8

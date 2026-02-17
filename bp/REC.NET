@@ -1,0 +1,33 @@
+definitions:
+nunits 9
+ninputs 3
+noutputs 3
+end
+constraints:
+a random linked
+b random linked
+c random linked
+d random linked
+e random linked
+f random linked
+g random linked
+h random linked
+i random linked
+j random negative linked
+k random negative linked
+l random negative linked
+end
+network:
+% 3 3 0 3
+abc
+def
+ghi
+% 6 3 3 3
+abc
+def
+ghi
+end
+biases:
+% 3 6
+jkljkl
+end

@@ -1,0 +1,6 @@
+set dlevel 3
+set conf ninputs 8
+set conf noutputs 2
+set nepoch 20
+set param lrate .25
+get patterns graph.pat

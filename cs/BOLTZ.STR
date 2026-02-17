@@ -1,0 +1,9 @@
+set dlevel 2
+get network cube.net
+set mode clamp 0
+set mode boltz 1
+set param estr .4
+set param istr .4
+get annealing 2 200 .05 end
+set ncyc 200
+get weights boltz.wts

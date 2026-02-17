@@ -1,0 +1,37 @@
+define: layout
+cpname   $          pss $            epochno  $          tss $
+
+pname     input    tar    pname     input    tar    pname     input    tar  
+
+$      $            $     $      $            $     $      $            $     
+
+
+
+
+
+
+
+
+
+weights       $                                      $   $
+       
+       
+input         $                                       out tar
+end	     	
+cpname 	variable	2	$       n	cpname	-6 1.0
+pss 	variable	2	$       n	pss	10 1.0
+epochno	variable	1	$	n	epochno	 6 1.0
+tss  	variable	1	$	n	tss	10 1.0
+env.pname vector	0	$	n	pname	   v 6   0  0  9
+env.ipat  matrix	0	$	n	ipattern   h 1 1.0  0  9 0 12
+env.tpat  matrix	0	$	n	tpattern   h 1 1.0  0  9 0  2
+env.pname vector	0	$	n	pname	   v 6   0  9  9
+env.ipat  matrix	0	$	n	ipattern   h 1 1.0  9  9 0 12
+env.tpat  matrix	0	$	n	tpattern   h 1 1.0  9  9 0  2
+env.pname vector	0	$	n	pname	   v 6   0 18  9
+env.ipat  matrix	0	$	n	ipattern   h 1 1.0 18  9 0 12
+env.tpat  matrix	0	$	n	tpattern   h 1 1.0 18  9 0  2
+weight	  matrix	3	$	n	weight	   h 3 1.0 12  2 0 12
+output	  vector	2	$	n	output     v 3 1.0  0  2
+target	  vector	2	$	n	target     v 3 1.0  0  2
+input	  vector	2	$	n	input      h 3 1.0  0 12

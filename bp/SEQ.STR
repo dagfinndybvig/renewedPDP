@@ -1,0 +1,8 @@
+get network seq.net
+get patterns seq.pat
+set nepochs 30
+set ecrit .04
+set dlevel 2
+set lflag 1
+set mode lgrain epoch
+set param lrate .5

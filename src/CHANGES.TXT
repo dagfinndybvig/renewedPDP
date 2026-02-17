@@ -1,0 +1,401 @@
+	CHANGES TO PDP SOFTWARE AND HANDBOOK
+	
+For the second printing of the book "Explorations in parallel
+distributed processing: A handbook of models, programs
+and exercises", by J. L. McClelland and D. E. Rumelhart,
+a small number of changes to the PDP software 
+have been made, and version 1.1 of the software has
+been constructed.  
+
+The changes to the software are all either bug fixes or
+minor cosmetic changes.  The most important fixes
+resolve a set of related problems with constraints
+on weights in the bp program:  In the old version,
+chaos could result when weights were linked
+together if the network contained more than 100 units,
+or if more than 100 weights were linked together
+or constrained to be positive or negative.
+The necessary changes are all in the file weights.c,
+and are listed below.
+
+In addition to the changes to the sources, a few errors 
+in the handbook text have been detected, and an errata will be
+included with the new printing listing corrections
+to these errors.  The bp template file cas.tem
+has also been changed to allow logging of activations
+to occur as described in the handbook text.
+
+Here is a description of the changes to the source files,
+followed by the results of running the unix diff program
+on the old and new versions.  Then a diff of the old
+and new versions of bp/cas.tem is provided.  Following this, 
+the errors in the text of the handbook are described.
+
+DESCRIPTION OF CHANGES TO SOURCE FILES
+
+in all .c files:
+
+    removed "(void)" cast on all calls to install_var and 
+    install_command. (these functions are now declared as void 
+    explcitly, see below).
+
+bp.c:
+    in logistic (lines 217,220):
+    
+	replaced constant 16.0 with 15.935773
+        (15.935773 is the number whose logistic is equal
+        to .99999988, which is retured if 15.935773 is exceeded)
+	
+command.c:
+
+    declared install_command as void.
+    
+    in do_command:
+    
+	the second argument to do_command was usually passed
+	as a pointer but interpreted by do_command as an integer.
+	This can lead to problems when pointers and integers have
+	different sizes.  To rectify the problem, do_command now
+	interprets its second argument as a pointer, than converts
+	it explicitly to an integer, storing the result in the 
+	integer variable Currrent_Menu, which is then used inside
+	the body of the do_command function.
+    
+    in contin_test, do_comfile, and file_error:
+    
+	cast second argument to do_command as (int *)
+
+    in do_comfile:
+    
+	fixed bug that caused programs to crash
+	if a return was entered in response to "How many times?"
+	query.
+	
+command.h:
+
+    declared install_command as void.
+	
+general.c:
+
+    in emalloc and erealloc:
+    
+    	caused the program to exit when it runs out of
+	memory rather than returning a null pointer to
+	the caller.
+
+main.c:
+
+    changed version number to 1.1
+    
+    deleted "stuct Variable *install_var ();" declaration.
+    
+    in main:
+    
+    	cast second argument to do_command as (int *)
+	both times it is called.
+	
+variable.c:
+
+    declared install_var as void and commented out return statement
+    in this function.
+
+variable.h:
+
+    declared install_var as void here too.
+	
+weights.c:
+
+    in define_network (line 620):
+    
+	fixed program to null constraint vectors up to
+	constraints[i].max rather than nunits.
+
+    above enlarge_constraints (old line 787):
+    
+    	added #define CON_INCR 100
+    
+    in enlarge_constraints:
+    
+    	replaced 100 with CON_INCR throughout
+	old lines 789,796, replaced '=' with '==' in
+		conditionals.
+	added code for nulling fresh portions of 
+		positive_constraints,
+		negative_constraints,
+		constraints[i].cvec,ivec
+
+DIFF RESULTS
+
+Here follows a diff of versions 1.0 and 1.1.  This diff was
+performed after all of the "(void)" casts on calls to
+install_var and install_command were deleted from
+version 1.0.  Only files with changes are listed.
+
+The diff tells what should be done to the old version to
+convert it into the new.  Lines beginning with < come from
+version 1.0, lines beginning with > come from version 1.1.
+
+====================
+bp.c
+====================
+217c217
+<       if (x > 16.0)
+---
+>       if (x > 15.935773)
+220c220
+< 	if (x < -16.0)
+---
+> 	if (x < -15.935773)
+====================
+command.c
+====================
+50c50
+< int     current_menu;
+---
+> int     *current_menu;
+60c60
+<     Current_Menu = current_menu;
+---
+>     Current_Menu = (int) current_menu;
+62c62
+<     	do_help(str,current_menu);
+---
+>     	do_help(str,Current_Menu);
+68c68
+<     	if (current_menu == BASEMENU) return(POP);
+---
+>     	if (Current_Menu == BASEMENU) return(POP);
+75c75
+< 	if ((!Command[i].menutype) || (Command[i].menutype == current_menu)) {
+---
+> 	if ((!Command[i].menutype) || (Command[i].menutype == Current_Menu)) {
+87c87
+< 		    (Command[i].menutype == current_menu)) {
+---
+> 		    (Command[i].menutype == Current_Menu)) {
+101c101
+< 	if( current_menu == DISPLAYMENU) {
+---
+> 	if( Current_Menu == DISPLAYMENU) {
+104c104
+< 	        if ((Command[i].menutype == current_menu)) {
+---
+> 	        if ((Command[i].menutype == Current_Menu)) {
+123c123
+< 		        (Command[i].menutype == current_menu)) {
+---
+> 		        (Command[i].menutype == Current_Menu)) {
+260c260,264
+< install_command(str, func, menu, intp)
+---
+> /* declare this as void so we don't have to cast all calls to install_command 
+> 	abh - 2/15/88 
+> */
+> 
+> void install_command(str, func, menu, intp)
+422c426
+<         	if (do_command(subprompt, BASEMENU) == POP) break;
+---
+>         	if (do_command(subprompt, (int *) BASEMENU) == POP) break;
+435,436c439,440
+< 	int echeck;
+< 	int nreps,i;
+---
+> 	int echeck,i;
+> 	int nreps = 0;
+449d452
+< 	nreps = 1;
+451c454,458
+< 	sscanf(str,"%d",&nreps);
+---
+> 	echeck = 0;
+> 	if (str) echeck = sscanf(str,"%d",&nreps);
+> 	if (echeck == 0) {
+> 	  return(put_error("Integer argument missing in do command."));
+> 	}
+456c463
+< 	    if (do_command(Prompt, BASEMENU) == BREAK) {
+---
+> 	    if (do_command(Prompt, (int *) BASEMENU) == BREAK) {
+492c499
+<         	if (do_command(subprompt, BASEMENU) == BREAK) break;
+---
+>         	if (do_command(subprompt, (int *) BASEMENU) == BREAK) break;
+====================
+command.h
+====================
+56c56
+< int     install_command ();
+---
+> void     install_command ();
+====================
+general.c
+====================
+79c79
+<     if (p == 0)
+---
+>     if (p == 0) {
+80a81,83
+> 	end_display();
+> 	exit(0);
+>     }
+94c97
+<     if (p == 0)
+---
+>     if (p == 0) {
+95a99,101
+> 	end_display();
+> 	exit(0);
+>     }
+104c110
+<     if (p == 0) 
+---
+>     if (p == 0) {
+105a112,114
+> 	end_display();
+> 	exit(0);
+>     }
+====================
+main.c
+====================
+29c29
+< char	version[10] = "1.0";
+---
+> char	version[10] = "1.1";
+36d35
+<     struct Variable *install_var ();
+74c73
+< 		   do_command(Prompt, BASEMENU);
+---
+> 		   do_command(Prompt, (int *) BASEMENU);
+94c93
+< 	do_command(Prompt, BASEMENU);
+---
+> 	do_command(Prompt, (int *) BASEMENU);
+====================
+variable.c
+====================
+55c55
+< 
+---
+> /* we replace this:
+57c57,60
+< install_var (s, t, varptr, max_x, max_y, menutype)
+---
+>    with void to avoid the hassle of casting to void on each call 
+>    abh - 2/15/88
+> */
+> void install_var (s, t, varptr, max_x, max_y, menutype)
+84a88
+> /*
+85a90
+> */
+====================
+variable.h
+====================
+31c31
+< struct Variable *install_var ();
+---
+> void install_var ();
+====================
+weights.c
+====================
+620c620
+< 	    for (j = 0; j < nunits; j++) {
+---
+> 	    for (j = 0; j < constraints[i].max; j++) {
+787a788,789
+> #define CON_INCR 100 /* increment in size of constriant */
+> 
+789,790c791,794
+<     if (con_index = ENLARGE_POS) {
+< 	maxpos += 100;
+---
+>     int j;
+>     
+>     if (con_index == ENLARGE_POS) {
+> 	maxpos += CON_INCR;
+793c797
+< 	      (unsigned int) ((maxpos - 100) * sizeof(float *)),
+---
+> 	      (unsigned int) ((maxpos - CON_INCR) * sizeof(float *)),
+794a799,801
+> 	for (j = maxpos - CON_INCR; j < maxpos; j++) {
+> 		positive_constraints[j] = NULL;
+> 	}
+796,797c803,804
+<     else if (con_index = ENLARGE_NEG) {
+< 	maxneg += 100;
+---
+>     else if (con_index == ENLARGE_NEG) {
+> 	maxneg += CON_INCR;
+800c807
+< 	     (unsigned int) ((maxneg -100) * sizeof (float *)),
+---
+> 	     (unsigned int) ((maxneg -CON_INCR) * sizeof (float *)),
+801a809,811
+> 	for (j = maxneg - CON_INCR; j < maxneg; j++) {
+> 		negative_constraints[j] = NULL;
+> 	}
+804c814
+< 	constraints[con_index].max += 100;
+---
+> 	constraints[con_index].max += CON_INCR;
+808c818
+< 	     ((constraints[con_index].max - 100) * sizeof(float *)),
+---
+> 	     ((constraints[con_index].max - CON_INCR) * sizeof(float *)),
+814c824
+< 	     ((constraints[con_index].max - 100) * sizeof(float *)),
+---
+> 	     ((constraints[con_index].max - CON_INCR) * sizeof(float *)),
+816a827,831
+> 	for (j = constraints[con_index].max - CON_INCR; 
+> 		j < constraints[con_index].max; j++) {
+> 	    constraints[con_index].cvec[j] = NULL;
+> 	    constraints[con_index].ivec[j] = NULL;
+> 	}
+DIFFERENCES BETWEEN OLD AND NEW VERSIONS OF bp/cas.tem
+
+All of the changes apply only to the dlevel variable:  
+dlevels of epochno and tss are set to 2 and dlevels of 
+cpname, cycleno, and output are set to 1.  Once again, 
+the diff indicates how to change the old version
+into the new version.  
+
+15,17c15,17
+< epochno	variable 1	$	n	epochno	5 1.0
+< tss	floatvar 1	$   	n	tss	7 1.0 
+< cpname	variable 2	$	5	cpname -5 1.0
+---
+> epochno	variable 2	$	n	epochno	5 1.0
+> tss	floatvar 2	$   	n	tss	7 1.0 
+> cpname	variable 1	$	5	cpname -5 1.0
+19c19
+< cycleno variable 2	$	n	cycleno 5 1.0
+---
+> cycleno variable 1	$	n	cycleno 5 1.0
+27c27
+< output	 vector	 2	$	n	activation v 3  100.0 2  3
+---
+> output	 vector	 1	$	n	activation v 3  100.0 2  3
+
+
+ERRATA BY PAGE NUMBER IN THE HANDBOOK
+
+Page 51: In Equation 2, each pair of units contributes only 
+one time to the first summation (w sub ij is assumed equal 
+to w sub ji).  The total goodness is not the sum of the goodnesses
+of the individual units.  It is best to think of the
+goodness of unit i as the set of terms in the total
+goodness to which the activation of unit i contribues.
+
+Page 67, lines 6 and 7:  Two occurrences of "display/ ipattern"
+should read "display/ env".
+
+Page 85, 2nd line from bottom:  The word "two" should be "four".
+
+Page 148, 12th line from bottom:  The first word on the line,
+"weights", should be "bias".
+
+Page 296, 8th line of Q.4.1.1:  The word "input" should be "output".

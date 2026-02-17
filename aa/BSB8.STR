@@ -1,0 +1,12 @@
+set conf nunits 8
+set mode hebb 1
+set mode linear 1
+set mode bsb 1
+set mode self 1
+set param estr .1
+set param istr 1.0
+set param decay 1.0
+set param lrate .125
+set ncycles 2
+set stepsize cycle
+set dlevel 3

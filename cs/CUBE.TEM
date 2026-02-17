@@ -1,0 +1,30 @@
+define: layout
+       bul         bur          ful         fur
+  $      -----------       $      -----------         cycleno     $
+       /           /|           /|           |
+      /           / |          / |           |        updateno    $
+     /           /  |         /  |           |
+    /           /   |        /   |           |        cuname      $
+ ful         fur    |     bul    |    bur    |
+   -----------      |            |    -      |        goodness    $
+  |    bll    |    blr     |     |     |     | 
+  |      -    |            |      -----------         temperature $
+  |    /      |    /       |    fll         flr
+  |           |   /        |   /           /
+  |           |  /         |  /           /           
+  |           | /          | /           /
+  |           |/           |/           /
+   -----------              -----------
+ fll         flr          bll         blr
+  $    A                         B
+end
+cube1		look	 1	$ 0	activation    1 10 1 cube1.loo 
+cube2		look	 1	$ 1	activation    1 10 1 cube2.loo 
+cycleno		variable 1	$ 2	cycleno	      7	1
+updateno	variable 1	$ 3	updateno      7	1
+uname		variable 1	$ 4	cuname	     -7	1.0
+goodness	floatvar 1	$ 5	goodness      7	1.0
+temperature	floatvar 1	$ 6	temperature   7	1.0
+weight		matrix	 5	$ 0	weight	h     4 10.0 0 16 0 16
+weight		vector   5	$ 2	uname   v     6 1 0 16
+weight		vector   5	$ 7	uname   h     4 1 0 16

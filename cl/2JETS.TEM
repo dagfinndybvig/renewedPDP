@@ -1,0 +1,19 @@
+define: layout
+epochno  $
+cpname   $
+
+output     $
+                                                       weights
+         input                                  unit_1       unit_2
+
+Gang    $              Je Sh                    $
+Age                    20 30 40
+Edu                    JH HS co
+Mar                    si ma di
+Job                    pu bg bo
+end
+epochno variable 1  $ 0  epochno 6 1
+cpname  variable 1 $ n  cpname -6 1
+output vector 1 $ n activation h 2 1.0 14 2
+input look 2  $ 3 activation 2 1 3 jets.loo
+weights look 3 $ 4 weight 2 100.0 3 jetwei.loo

@@ -1,0 +1,9 @@
+set dlevel 1
+get network room.net
+set mode clamp 1
+set param istr 0.5
+set param estr 1.0
+set ncycles 50
+get unames ceiling walls door window very-large large medium small very-small desk telephone bed typewriter book-shelf carpet books desk-chair clock picture floor-lamp sofa easy-chair coffee-cup ash-tray fire-place drapes stove sink refrigerator toaster cupboard coffeepot dresser television bathtub toilet scale coat-hanger computer oven end
+get weights room.wts
+get anneal 2 200 .05 end

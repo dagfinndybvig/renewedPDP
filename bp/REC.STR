@@ -1,0 +1,10 @@
+get network rec.net
+get patterns rec.pat
+set nepochs 200
+set ecrit .04
+set dlevel 2
+set slevel 1
+set lflag 1
+set mode lgrain epoch
+set param lrate .25
+

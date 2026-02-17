@@ -1,0 +1,10 @@
+set conf nunits 8
+set mode linear 1
+set param estr 1.0
+set param istr 1.0
+set param decay 1.0
+set param lrate .05
+set ncycles 2
+set stepsize pattern
+set nepochs 10
+set dlevel 3

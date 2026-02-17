@@ -1,0 +1,25 @@
+define: layout
+epoch   $      tss   $
+cpname  $      pss   $
+
+     plan
+        $
+                     hidden    out/next  target
+                        $         $        $
+
+     current
+        $
+
+
+
+end
+epochno	variable	1	$	n	epochno	6	1.0
+tss	floatvar	1	$   	n   	tss	8 	1.0 
+cpname	variable	1	$	n	cpname	-6	1.0
+pss	floatvar	1	$	n	pss	8 	1.0 
+plan	vector		2	$	4	activation v 3 100.0 0 4
+hidden	vector		2	$	5	activation v 3 100.0 8 4
+output	 vector		2	$	6	activation v 3 100.0 12 4
+targets	vector		2	$	7	target	v 3 100.0 0 4
+current	vector		2	$	8	activation v 3 100.0 4 4
+

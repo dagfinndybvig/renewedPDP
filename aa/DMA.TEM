@@ -1,0 +1,35 @@
+define: layout
+epochno $         $                                                 $   $   $ 
+cpname  $
+cycleno $
+ndp     $
+nvl     $
+vcor    $
+pss     $
+tss     $
+
+
+        $       $
+
+
+
+
+
+
+        prioract  $                                                 ext int act
+end
+epochno	variable	1	$	n	epochno	 6	1.0
+cpname	variable	1	$	5	cpname	-6	1.0
+cycleno	variable	1	$	n	cycleno	 6	1.0
+ndp	floatvar	1	$	n	ndp	 6	1.0
+nvl	floatvar	1	$	n	nvl	 6	1.0
+vcor	floatvar	1	$	n	vcor	 6 	1.0 
+pss	floatvar	1	$	n	pss	 6 	1.0 
+tss	floatvar	1	$	n	tss	 6 	1.0 
+weights	 matrix		3	$	1	weight	 h 3	100.0 0 16 0 16
+extinp	vector		2	$	n	extinput v 3 	100.0 0 16
+intinp 	vector		2	$	n	intinput v 3	100.0 0 16
+activation vector	2	$	n	activation v 3	100.0 0 16
+env.pname vector	5	$	12	pname    v 3      0 0 16
+env.ipat matrix		5	$	n	ipattern h 1	1.0 0 20 0 16
+prioract vector		2	$	14	prioract h 3	100.0 0 16

@@ -1,0 +1,9 @@
+set dlevel 1
+get network cube.net
+set mode clamp 0
+set param estr .4
+set param istr .4
+set ncyc 20
+get anneal 2 20 .05 end
+get unames Abul  Abur  Aful  Afur  Abll  Ablr  Afll  Aflr Bbul  Bbur  Bful  Bfur  Bbll  Bblr  Bfll  Bflr end
+get weights cube.wts

@@ -1,0 +1,9 @@
+get network 8x8.net
+set dlevel 3
+set lflag 1
+set mode linear 1
+set mode hebb 1
+set nepochs 1
+set param lrate .125
+set step cycle
+

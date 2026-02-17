@@ -1,0 +1,29 @@
+define: layout
+                                     pname ipatterns   tpatterns
+epoch   $       tss     $             $      $            $
+                gcor    $          
+cpname  $       pss     $            
+
+
+
+sender acts:      $                   bia net act tar del
+
+weights:          $                   $   $   $       $
+  
+                                                  $
+end
+epochno	variable 1	$	n	epochno	5 1.0
+tss	floatvar 1	$   	n	tss	7 1.0 
+gcor	floatvar 2	$	5	gcor	7 1.0
+cpname	variable 2	$	n	cpname -5 1.0
+pss	floatvar 2	$	n	pss	7 1.0
+env.pname vector 0	$	2	pname      v 4      0 0  4
+env.ipat matrix	 0	$	n	ipattern   h 2    1.0 0  4 0 2
+env.tpat matrix	 0	$	n	tpattern   h 2    1.0 0  4 0 1
+input	 vector	 3	$	8	activation h 4  100.0 0  4
+weight	 matrix	 3	$	n	weight	   h 4  100.0 2  3 0 4
+bias	 vector	 3	$	n	bias	   v 3  100.0 2 15
+netinput vector	 3	$	n	netinput   v 3  100.0 2 15
+output	 vector	 3	$	n	activation v 3  100.0 2  3
+deltas	 vector	 3	$	n	delta	   v 3 1000.0 2  3
+targets	 vector	 3	$	n	target	   v 3  100.0 0  1

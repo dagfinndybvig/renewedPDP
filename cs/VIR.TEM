@@ -1,0 +1,26 @@
+define: layout
+
+                I  R1 R2 RT V1 V2 VT           cycleno  $
+       Inputs   $                              temp     $
+                cu cu cu cu cu cu cu           harmony  $
+       Features $
+
+               knowledge atom activations
+
+               u u u u u s s s d d d d d
+               u s d d d u s d u u u s d
+               u u u s d u s d u s d d d
+
+ V1 + V2 = VT  $
+ R1 + R2 = RT
+  I * R1 = V1
+  I * R2 = V2
+  I * RT = VT
+end
+
+input	look	2	$	1	extinput    1 1.0  1 vfeat.loo
+features look	2	$	4	activation  1 1.0  1 vfeat.loo
+atoms	look	2	$ 	5	activation  1 1.0  2 vatoms.loo
+cycleno variable 2	$	0	cycleno	    8 1
+harmony floatvar 2	$	3	goodness    8 1.0
+temperature floatvar 2	$	2	temperature 8 1.0

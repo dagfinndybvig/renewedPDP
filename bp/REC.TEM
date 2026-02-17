@@ -1,0 +1,27 @@
+define: layout
+epoch  $
+cpname $           input          $
+pss    $           first output   $
+tss    $           second output  $
+
+
+in1        $             bia out1/in2 $             bia out2
+                         
+weights    $            $   $         $            $   $
+
+end
+epochno	variable	1	$	0	epochno	6	1.0
+cpname	variable	1	$	1	cpname	-6	1.0
+input	vector		2	$	2	activation h 4 100.0 0 3
+pss	floatvar	1	$	3	pss	6 	1.0 
+hidden	vector		2	$	4	activation h 4 100.0 3 3
+tss	floatvar	1	$   	5   	tss	6 	1.0 
+output	vector		2	$	6	activation h 4 100.0 6 3
+in.1	vector		3	$	7	activation h 4 100.0 0 3
+in.2	vector		3	$	8	activation h 4 100.0 3 3
+weight.1 matrix		3	$	9	weight h 4 100.0 3 3 0 3
+bias.1	vector		3	$	10	bias v 4 100.0 3 3
+out.1	vector		3	$	11	activation v 4 100.0 3 3
+weight.2 matrix		3	$	12	weight h 4 100.0 6 3 3 3
+bias.2	vector		3	$	13	bias v 4 100.0 6 3
+out.2	vector		3	$	14	activation v 4 100.0 6 3

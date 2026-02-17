@@ -1,0 +1,11 @@
+set conf nunits 16
+set step epoch
+set nepochs 25
+set ncycles 10
+set dlevel 3
+set param estr .15
+set param decay .15
+set param istr .15
+set param lrate .01
+set param pflip .20
+

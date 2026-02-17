@@ -1,0 +1,55 @@
+define: layout
+cycle $      letter 0   letter 1   letter 2   letter 3     word
+             num   $    num   $    num   $    num   $    num    $
+             sum   $    sum   $    sum   $    sum   $    sum    $
+-----------------------------------------------------------------------------
+  TRIAL   |  $  $  $    $  $  $    $  $  $    $  $  $    $    $  $  $    $  $ 
+ $        |
+          |
+          |
+          |
+          |
+          |
+          |
+----------|
+ CHOICE   |  
+pos   $   |
+$   $  $  |
+          |
+fca    $  |
+end
+cycleno	 variable	1	$ 0	cycleno	3	1
+nlpos0   variable	1	$ 1	nlpos0	2	1
+nlpos1   variable	1	$ 2	nlpos1	2	1
+nlpos2   variable	1	$ 3	nlpos2	2	1
+nlpos3   variable	1	$ 4	nlpos3	2	1
+nwords   variable	1	$ 5	nwords	3	1
+alpos0   variable	1	$ 6	alpos0 2 100.0
+alpos1   variable	1	$ 7	alpos1 2 100.0
+alpos2   variable	1	$ 8	alpos2 2 100.0
+alpos3   variable	1	$ 9	alpos3 2 100.0
+awords   variable	1	$ 10	awords	3	100.0
+let.l0   label_array	1	$ 11    dlp0   h 8 0 15
+let.a0   vector		1	$ 12    dla0   v 2 100.0 0  15
+let.o0   vector         2       $ 13    dlr0   v 2 100.0 0  15
+let.l1   label_array	1	$ 14    dlp1   h 8 0 15
+let.a1   vector		1	$ 15    dla1   v 2 100.0 0  15
+let.o1   vector         2       $ 16    dlr1   v 2 100.0 0  15
+let.l2   label_array	1	$ 17    dlp2   h 8 0 15
+let.a2   vector		1	$ 18    dla2   v 2 100.0 0  15
+let.o2   vector         2       $ 19    dlr2   v 2 100.0 0  15
+let.l3   label_array	1	$ 20    dlp3   h 8 0 15
+let.a3   vector		1	$ 21    dla3   v 2 100.0 0  15
+let.o3   vector         2       $ 22    dlr3   v 2 100.0 0  15
+word.l1  label_array    1       $ 23    dwp    h 10 0  15
+word.a1  vector		1	$ 24    dwa    v 2 100.0 0  15
+word.o1  vector		3	$ 25	dwr    v 2 100.0 0  15
+word.l2  label_array    1       $ 26    dwp    h 10 15 15
+word.a2  vector		1	$ 27    dwa    v 2 100.0 15 15
+word.o2  vector		3	$ 28	dwr    v 2 100.0 15 15
+trial    label_array	0 	$ 29	trial  h 9 0 10
+fcpos    variable	2	$ 30	fcpos	3	1
+fc.alt	 label_array	2	$ 31	dfp	h 1 0 2
+fc.act   vector		2	$ 32    dfa	v 2 100.0 0 2
+fc.out   vector         2       $ 33    dfr     v 2 100.0 0 2
+fc.max	variable	2	$ 34    fcmax   2   100.0

@@ -1,0 +1,10 @@
+epochno label 0 5 0 h 10
+epochno variable 1 5 8 epochno 6 1
+output label 0 6 0 h 10
+output vector 2 6 10 activation h 2 1.0 16 2
+inputs label 0 8 8 h 10
+input look 2  11 4 activation 2 1 3 16.loo
+weights label 0 8 48 h 10
+unit1 label 0 9 41 h 10
+unit2 label 0 9 56 h 10
+weights look 3 11 37 weight 2 100.0 3 16wei.loo

@@ -1,0 +1,9 @@
+get network 8x8.net
+get pat 78.pat
+set dlevel 3
+set lflag 1
+set nepochs 10
+set param lrate 2.0
+set param temp 15
+set step pattern
+

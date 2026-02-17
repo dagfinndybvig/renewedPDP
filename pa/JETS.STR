@@ -1,0 +1,6 @@
+get network jets.net
+set dlevel 3
+set lflag 1
+set nepochs 30
+set param temp 15
+set param lrate 2.0

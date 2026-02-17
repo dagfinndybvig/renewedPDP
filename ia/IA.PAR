@@ -1,0 +1,7 @@
+set param alpha f->l 0.005
+set param alpha l->w 0.07
+set param alpha w->l 0.30
+set param gamma f->l 0.15
+set param gamma l->w 0.04
+set param gamma w->w 0.21
+set param gamma l->l 0.00

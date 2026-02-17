@@ -1,0 +1,5 @@
+cycleno        label	0	5 	70 	h          5
+cycleno	   variable	1	5 	75 	cycleno    4	1
+unitnames  label_look	0	5 	3	uname h   7  14 jets.loo
+extinput   look		2	5	0	extinput   2 100. 14 jets.loo
+activation look		1	5 	10 	activation 3 100. 14 jets.loo

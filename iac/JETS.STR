@@ -1,0 +1,11 @@
+set dlevel 3
+set slevel 1
+set param max 1.0
+set param min -.2
+set param rest -.1
+set param alpha .1
+set param gamma .1
+set param decay .1
+set param estr .4
+get network jets.net
+get unames Jets Sharks in20s in30s in40s JH HS College Single Married Divorced Pusher Burglar Bookie Art Al Sam Clyde Mike Jim Greg John Doug Lance George Pete Fred Gene Ralph Phil Ike Nick Don Ned Karl Ken Earl Rick Ol Neal Dave _Art _Al _Sam _Clyde _Mike _Jim _Greg _John _Doug _Lance _George _Pete _Fred _Gene _Ralph _Phil _Ike _Nick _Don _Ned _Karl _Ken _Earl _Rick _Ol _Neal _Dave end

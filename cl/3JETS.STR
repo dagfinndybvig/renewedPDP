@@ -1,0 +1,7 @@
+set dlevel 3
+set conf noutputs 3
+set conf ninputs 14
+set nepoch 20
+set param lrate .05
+get patterns jets.pat
+test Art

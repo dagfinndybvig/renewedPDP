@@ -1,0 +1,69 @@
+
+                             LICENSE AGREEMENT FOR
+              THE PARALLEL DISTRIBUTED PROCESSING SOFTWARE PACKAGE
+
+   The software enclosed with the book "Explorations in Parallel  Distributed
+   Processing:  A Handbook of Models, Programs and Exercises" constitutes the
+   Parallel Distributed Processing software package.
+
+         Copyright 1987 by James L. McClelland and David E. Rumelhart.
+
+      The rights to market and distribute Version 1.0 of this package in con-
+   junction  with  the  handbook  have  been licensed to MIT Press. All other
+   rights to market or distribute the source and/or object code contained  in
+   this package, or any part or modification thereof, or any of the ancillary
+   computer files included in this package, are reserved.
+
+      CONDITIONS OF LICENSE.  MIT Press licenses this software under the fol-
+   lowing terms:
+
+   1) The licensee may use this software and modified  or  extended  versions
+   thereof, and may make copies of the source and object code to support this
+   use, provided a) that any reports or publications arising from  such  uses
+   acknowledge  the source of the software and refer to the Handbook; b) that
+   the licensee acknowledges and accepts the disclaimers given below; and  c)
+   that  the  licensee  agrees  to refrain from marketing or distributing for
+   profit any portion of  the  software  or  any  modification  or  extension
+   thereof.
+
+   2) The licensee may make modifications and extensions of the software,  as
+   long  as  a) all versions of the source files used for such purposes still
+   retain the original copyright notice; b) the computer-readable version  of
+   this  license agreement in the file license.txt is kept in the same direc-
+   tory with these source files; and c) each executable program created  from
+   such modification or extension displays the original copyright notice each
+   time it is run.
+
+   This license is granted to the purchasing individual or  institution,  and
+   to  all  individuals who are given access to the software by the purchaser
+   or purchasing institution.  The software may also be used and  adapted  in
+   accordance  with  these terms for any purpose of the United States govern-
+   ment.
+
+      WARRANTY ON DISKETTES.  MIT Press warrants to  the  original  purchaser
+   only  that  the  diskettes  on which the PDP software is supplied are free
+   from defects as supplied, and will replace any defective diskettes free of
+   charge.
+
+      DISCLAIMERS.  The programs have been carefully  tested,  but  they  are
+   provided  without  any warranty other than that stated above.  There is no
+   warranty that the programs will produce mathematically correct results  or
+   that they are free from errors. No warranties are made concerning the con-
+   ditions under which the source code can be recompiled.  Neither MIT  Press
+   nor  the  authors  can  accept  responsibility  for  any incompatibilities
+   between the user's computer system and the IBM-PC or MS-DOS operating sys-
+   tem versions 2.0 through 3.2 under which the programs were developed.
+
+      MIT Press and the authors deny any responsibility for errors, misstate-
+   ments or omissions that may or may not lead to injuries or loss of proper-
+   ty. In no case shall the authors or the Press be liable for a sum  greater
+   than the price paid by the user upon purchase of this product.
+
+      IF YOU HAVE A PROBLEM OR SUGGESTION, please write to PDP  Software  In-
+   quiries,  c/o  Texts  Manager, MIT Press, 55 Hayward Street, Cambridge, MA
+   02142.  If you have a defective diskette, send it along and it will be re-
+   placed.   For other problems, we cannot offer help on an individual basis,
+   but if you enclose a stamped, self-addressed envelope, you will receive an
+   acknowledgement  of your problem or comment along with accumulated advice,
+   fixes,  work-arounds,  and  information  on  availability  of   subsequent
+   releases.

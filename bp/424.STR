@@ -1,0 +1,7 @@
+get network 424.net
+get patterns 424.pat
+set dlevel 3
+set lflag 1
+set param lrate .5
+set mode lgrain pattern
+tall

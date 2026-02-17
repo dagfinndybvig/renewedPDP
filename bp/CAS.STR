@@ -1,0 +1,12 @@
+get network xor.net
+get patterns xor.pat
+get weights xor.wts
+set nepochs 300
+set ecrit .04
+set dlevel 3
+set slevel 1
+set lflag 1
+set ncycles 100
+set mode lgrain epoch
+set param lrate .5
+tall

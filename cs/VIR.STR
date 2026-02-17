@@ -1,0 +1,8 @@
+set mode harmony 1
+get network vir.net
+get unames Ic Iu R1c R1u R2c R2u Rc Ru V1c V1u V2c V2u Vc Vu end 
+get anneal 1.0 200 .05 end 
+set dlevel 2
+input n Vc -1 R1c -1 R2c 1 R2u 1 end 
+reset
+set ncycles 300

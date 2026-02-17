@@ -1,0 +1,29 @@
+define: layout
+                                                    pname ipattern  tpattern
+                                                    $     $         $
+end	     	
+epochno	label		0	5	0	h	6
+epochno	variable	1	5	6	epochno	7	1.0
+cpname	label		0	6       0	h	6
+cpname 	variable	2	6       6	cpname	-7	1
+ndp	label		0	7       0	h	6
+ndp 	floatvar	2	7       6	ndp	7	1
+nvl	label		0	8       0	h	6
+nvl 	floatvar	2	8       6	nvl	7	1
+vcor	label		0	9       0	h	6
+vcor 	floatvar	2	9       6	vcor	7	1
+pss	label		0	10      0	h	6
+pss 	floatvar	2	10      6	pss	7	1
+tss	label		0	11      0	h	6
+tss 	floatvar	2	11      6	tss	7	1
+output	label		0	11	39	h	  3
+output	vector		2	13	38	output	  v 4 100.0 0 8
+target	label		0	11	45	h	3
+target	vector		2	13	44	target	v 4 100.0  0 8
+weights	label		0	13	 0	h	10
+weight	matrix		3	13	10	weight	h 3 100.0 8 8 0 8
+input	label		0	22	 0	h	10
+input	vector		2	22	10	input	h 3 100.0 0 8
+env.pname vector	0	$	n	pname	 v 4   0 0 18
+env.ipat matrix		0	$	n	ipattern h 1 1.0 0 18 0 8
+env.tpat matrix		0	$	n	tpattern h 1 1.0 0 18 0 8

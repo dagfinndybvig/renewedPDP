@@ -1,0 +1,14 @@
+definitions:
+nunits 10
+ninputs 4
+noutputs 4
+nepochs 500
+ecrit 0.04
+end
+network:
+%r 4 2 0 4
+%r 6 4 4 2
+end
+biases:
+%r 4 6
+end

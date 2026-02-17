@@ -1,0 +1,7 @@
+set conf noutputs 2
+set conf ninputs 16
+set nepoch 20
+set param lrate .1
+get patterns 16.pat
+set dlevel 3
+tall
