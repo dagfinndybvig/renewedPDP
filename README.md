@@ -228,3 +228,17 @@ file aa/aa
 - The codebase intentionally remains mostly K&R-style C.
 - Compiler warnings are expected on modern toolchains; the portability target here is successful build and execution.
 - Historical upstream notes are preserved in `src/CHANGES.TXT`.
+
+### Linking and Runtime Dependencies
+
+- Binaries produced by the default build are **dynamically linked**.
+- On Linux, they typically depend on shared libraries such as `libc`, `libm`, `libncurses`, and `libtinfo`.
+
+You can verify on the target host with:
+
+```bash
+file aa/aa
+ldd aa/aa
+```
+
+If `ldd` shows missing libraries, install the required runtime/development packages (for example `libncurses`/`libtinfo`) and retry.
