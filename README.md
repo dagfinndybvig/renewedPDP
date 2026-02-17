@@ -1,47 +1,46 @@
 # renewedPDP
 
-`renewedPDP` is a preservation/portability copy of the classic PDP software used with:
+`renewedPDP` is a preservation/portability copy of the classic PDP software associated with:
 
 - *Explorations in Parallel Distributed Processing: A Handbook of Models, Programs, and Exercises*
 - J. L. McClelland and D. E. Rumelhart
 
-The original sources are late-1980s C code with DOS and early Unix build assumptions.
-This repository keeps that codebase intact while making it practical to build on modern Linux.
+The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while making it practical to build and run on modern Linux.
 
-## Repository at a glance
+## Repository Layout
 
-- `src/`: C sources, headers, and Makefiles.
-- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: program data files (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and output binary location for each executable.
-- `utils/`: utility tool outputs (`plot`, `colex`).
-- `*.ARC`: archived/original distributions retained in repo.
+- `src/`: core C sources, headers, and Makefiles
+- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and executable output locations
+- `utils/`: utility tool outputs (`plot`, `colex`)
+- `*.ARC`: archived/original distribution artifacts preserved in repo
 
-## What has been done in this branch
+## Portability Work Completed
 
-The following Linux portability/build updates were applied and verified:
+The following Linux portability/build updates were applied and verified in this branch.
 
-1. **Modernized build flags and libraries in `src/Makefile` and `src/MAKEFILE`**
-	- `CFLAGS` set to `-std=gnu89 -fcommon`.
-	- `-ltermlib` removed from link flags (not generally available on modern Linux).
-	- `-lcurses` retained.
+1. **Build flags and linker inputs updated in `src/Makefile` and `src/MAKEFILE`**
+   - `CFLAGS` set to `-std=gnu89 -fcommon`
+   - removed `-ltermlib` (typically unavailable on modern Linux)
+   - retained `-lcurses`
 
-2. **Automatic case-compatibility setup for legacy uppercase filenames**
-	- Added `linux_compat_links` make target to create lowercase symlinks for `*.C`/`*.H` so historical lowercase make rules work on case-sensitive filesystems.
-	- Wired into `make progs` and `make utils`.
+2. **Automatic case-compatibility for legacy uppercase source names**
+   - added `linux_compat_links` target to create lowercase symlinks for `*.C`/`*.H`
+   - integrated into `make progs` and `make utils`
 
-3. **Made command-style targets explicitly phony**
-	- Added `.PHONY` list to avoid unintended implicit-rule behavior with names like `plot` and `colex`.
+3. **Phony target cleanup**
+   - added `.PHONY` entries to prevent unintended implicit-rule behavior for names such as `plot` and `colex`
 
-4. **Fixed hard compile blockers in `src/GENERAL.H` and `src/GENERAL.C`**
-	- Removed obsolete declarations conflicting with modern libc prototypes (`sprintf`, `malloc`, `realloc`).
-	- Added required standard headers (`stdlib.h`, `string.h`).
-	- Changed global `in_stream` initialization from `stdin` at file scope to runtime initialization in `init_general()` (portable with modern compilers).
+4. **Hard compile blockers fixed in `src/GENERAL.H` and `src/GENERAL.C`**
+   - removed obsolete declarations conflicting with modern libc (`sprintf`, `malloc`, `realloc`)
+   - added required standard headers (`stdlib.h`, `string.h`)
+   - moved global `in_stream` initialization from file scope (`stdin`) to runtime in `init_general()`
 
-5. **Fixed utility compile blocker in `src/COLEX.C`**
-	- Renamed variable `inline` to `input_line` (`inline` is a modern C keyword).
-	- Added missing standard headers (`stdlib.h`, `string.h`).
+5. **Hard compile blocker fixed in `src/COLEX.C`**
+   - renamed variable `inline` to `input_line` (`inline` is a C keyword in modern compilers)
+   - added missing standard headers (`stdlib.h`, `string.h`)
 
-6. **Added build artifact ignores**
-	- Added `.gitignore` entries for generated objects, archives, symlinks, and built executables.
+6. **Build artifact ignores added**
+   - added `.gitignore` entries for generated objects, archives, symlinks, and built executables
 
 ## Build (Ubuntu/Linux)
 
@@ -53,14 +52,14 @@ make progs
 make utils
 ```
 
-This builds:
+Outputs:
 
-- Core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
-- Utilities: `utils/plot`, `utils/colex`
+- core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
+- utility executables: `utils/plot`, `utils/colex`
 
 ## Quick Start
 
-After building, run each program from its own directory so templates/data files are easy to load:
+Run each model from its own directory so template and data files resolve naturally:
 
 ```bash
 cd aa && ./aa
@@ -72,58 +71,100 @@ cd ../iac && ./iac
 cd ../pa && ./pa
 ```
 
-Common first interactive commands inside a program:
+Common first commands in interactive sessions:
 
 - `get/template` (load a `.TEM` file)
-- `get/network` (load a `.NET` file where applicable)
+- `get/network` (load a `.NET` file, where applicable)
 - `get/patterns` (load a `.PAT` file)
-- `run`/training commands specific to the selected program
+- training/run commands for the selected program
 
-Utility tools:
+Run utility tools:
 
 ```bash
 ./utils/plot
 ./utils/colex
 ```
 
-### Example Session (`bp`)
+### Interactive Example (`bp`)
 
-This example uses files that already exist in `bp/` (`424.TEM`, `424.NET`, `424.PAT`).
+This example uses files already present in `bp/`: `424.TEM`, `424.NET`, `424.PAT`.
 
 ```bash
 cd bp
 ./bp 424.TEM
 ```
 
-Then at the interactive prompt:
+At the prompt:
 
-1. Enter `get` (moves into the `get/` submenu).
-2. Enter `network`, then at the filename prompt enter `424.NET`.
-3. Enter `patterns`, then at the filename prompt enter `424.PAT`.
-4. Press `Enter` on an empty line to leave the submenu.
-5. Enter `ptrain` to run pattern training.
-6. Enter `quit`, then `y` to exit.
+1. Enter `get` (opens the `get/` submenu)
+2. Enter `network`, then provide `424.NET`
+3. Enter `patterns`, then provide `424.PAT`
+4. Press `Enter` on a blank line to leave the submenu
+5. Enter `ptrain`
+6. Enter `quit`, then `y`
 
-If you prefer another dataset, `bp/` also includes `REC.*`, `SEQ.*`, and `XOR.*` file sets.
+Other built-in `bp` dataset families include `REC.*`, `SEQ.*`, and `XOR.*`.
 
-## Clean
+### Batch Example (`bp`)
+
+You can script a session by passing a command file as the second CLI argument:
+
+```bash
+cd bp
+cat > example.com << 'EOF'
+get
+network 424.NET
+patterns 424.PAT
+
+ptrain
+quit y
+EOF
+
+./bp 424.TEM example.com
+```
+
+Notes:
+
+- first argument: template file (`.TEM`)
+- second argument: command script consumed by the same parser used interactively
+- `quit y` ends the run cleanly
+
+### Batch Example (`pa`)
+
+`pa/` includes a matched `JETS` set: `JETS.TEM`, `JETS.NET`, `JETS.PAT`.
+
+```bash
+cd pa
+cat > example.com << 'EOF'
+get
+network JETS.NET
+patterns JETS.PAT
+
+ptrain
+quit y
+EOF
+
+./pa JETS.TEM example.com
+```
+
+## Maintenance
+
+Clean object/library artifacts:
 
 ```bash
 cd src
 make clean
 ```
 
-## Dependencies
-
-If curses dev files are missing:
+Install dependencies if curses development files are missing:
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y libncurses-dev
 ```
 
-## Notes
+## Additional Notes
 
-- The codebase is intentionally still K&R-era style C in many places.
-- You should expect compiler warnings on modern toolchains; build success is the primary target of the portability pass.
-- Historical notes from the original software update are preserved in `src/CHANGES.TXT`.
+- The codebase intentionally remains mostly K&R-style C.
+- Compiler warnings are expected on modern toolchains; the portability target here is successful build and execution.
+- Historical upstream notes are preserved in `src/CHANGES.TXT`.
