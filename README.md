@@ -22,6 +22,12 @@ Note: The original binaries can still be run in DOSBOX
 - `utils/`: utility tool outputs (`plot`, `colex`)
 - `*.ARC`: archived/original distribution artifacts preserved in repo
 
+## Known Issue
+
+Terminal recovery after quitting `iac` is improved but not yet fully reliable across all environments.
+
+See [TODO.md](TODO.md) for the current status, attempted fixes, and next debugging steps.
+
 ## Portability Work Completed
 
 The following Linux portability/build updates were applied and verified in this branch.
@@ -113,6 +119,24 @@ At the prompt:
 
 Other built-in `bp` dataset families include `REC.*`, `SEQ.*`, and `XOR.*`.
 
+### Stable launcher for `iac` terminal sessions
+
+If your terminal occasionally remains in a bad state after quitting `iac`, use the safe wrapper:
+
+```bash
+./scripts/run_iac_safe.sh iac/JETS.TEM iac/JETS.STR
+```
+
+If arguments are omitted, it defaults to `iac/JETS.TEM iac/JETS.STR`.
+
+For the most robust isolation, run `iac` inside a dedicated PTY wrapper:
+
+```bash
+./scripts/run_iac_pty.sh iac/JETS.TEM iac/JETS.STR
+```
+
+This keeps your shell terminal separate from `iac`'s curses session.
+
 ### Batch Example (`bp`)
 
 You can script a session by passing a command file as the second CLI argument:
@@ -170,6 +194,16 @@ Install dependencies if curses development files are missing:
 sudo apt-get update
 sudo apt-get install -y libncurses-dev
 ```
+
+## Terminal Recovery (if a TUI session wedges the shell)
+
+If the terminal becomes unresponsive or stops echoing after quitting one of the interactive programs, run:
+
+```bash
+stty sane; tput rmcup 2>/dev/null || true; reset
+```
+
+Then press `Ctrl+J` once if needed to force a newline redraw.
 
 ## Smoke Tests
 

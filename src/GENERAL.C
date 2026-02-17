@@ -201,6 +201,13 @@ quit() {
 
    if (str && str[0] == 'y') {
 	    end_display();
+#ifndef MSDOS
+        system("stty sane </dev/tty >/dev/tty 2>/dev/tty");
+        system("tput rmcup </dev/tty >/dev/tty 2>/dev/null");
+        system("reset </dev/tty >/dev/tty 2>/dev/tty");
+#endif
+        printf("\n");
+        fflush(stdout);
 	    exit(0);
    }
    else

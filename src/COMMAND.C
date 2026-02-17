@@ -26,6 +26,8 @@
 #include "general.h"
 #include "io.h"
 #include "command.h"
+#include <string.h>
+#include <stdlib.h>
 
 int maxcommands = MAXCOMMANDS;
 /* maxcommands is automatically increased if necessary */
@@ -321,8 +323,8 @@ readline() {
 
     else {
       rp = Line_Buf;
-      while ( (ch = getc(in_stream)) != '\n' && ch != EOF) {
-	if (ch == '' || ch == '') {
+      while ( (ch = getc(in_stream)) != '\n' && ch != '\r' && ch != EOF) {
+	if (ch == '\b' || ch == '\177') {
 	  if (lp > Line_Buf) {
 	    io_addch('');
 	    io_addch(' ');
@@ -336,9 +338,8 @@ readline() {
 	io_addch(ch);
 	io_refresh();
       }
-      io_addch(' ');
-      io_refresh();
       *lp = '\n';
+	*(lp + 1) = '\0';
     }
     return(rp);
 }
@@ -381,12 +382,13 @@ char  *prompt;
 
  /* eat all extra spaces */
     while (*lp == ' ' || *lp == '\t') lp++;
-    if (*lp == EOF || *lp == '\n') {
+	if (*lp == EOF || *lp == '\n' || *lp == '\r') {
 	endline = 1;
 	return((char *) NULL);
     }
 
-    while (*lp != ' ' && *lp != '\t' && *lp != '\n') {
+
+	while (*lp != ' ' && *lp != '\t' && *lp != '\n' && *lp != '\r') {
 	    *ip++ = *lp++;
     }
     *ip = '\0';
@@ -394,7 +396,7 @@ char  *prompt;
     while (*lp == ' ' || *lp == '\t') *lp++;
     				/* eat all extra blanks */
 
-    if (*lp == '\n') {
+	if (*lp == '\n' || *lp == '\r') {
 	endline = 1;
     }
 

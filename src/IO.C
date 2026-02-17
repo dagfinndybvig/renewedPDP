@@ -65,18 +65,68 @@ extern int start_up;
 #ifdef CURSES
 
 #include <curses.h>
+#ifndef MSDOS
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#endif
+
+#ifndef MSDOS
+static int tty_state_saved = 0;
+static struct termios tty_state;
+static int tty_fd = -1;
+#endif
+static int io_screen_active = 0;
 
 io_initscr() {
+#ifndef MSDOS
+    tty_state_saved = 0;
+    if (tty_fd < 0) {
+        tty_fd = open("/dev/tty", O_RDWR);
+    }
+    if (tty_fd >= 0 && tcgetattr(tty_fd, &tty_state) == 0) {
+        tty_state_saved = 1;
+    }
+#endif
     initscr();
-    crmode();
+    io_screen_active = 1;
+    cbreak();
     noecho();
 }
 
 io_endwin() {
     if (start_up) return;
-    endwin();
-    nocrmode();
-    echo();
+
+    if (io_screen_active) {
+        nocbreak();
+        noraw();
+        echo();
+        nl();
+        reset_shell_mode();
+        endwin();
+        io_screen_active = 0;
+    }
+#ifndef MSDOS
+    else {
+        if (tty_fd < 0) {
+            tty_fd = open("/dev/tty", O_RDWR);
+        }
+        if (tty_fd >= 0) {
+            reset_shell_mode();
+        }
+    }
+#endif
+#ifndef MSDOS
+    if (tty_state_saved) {
+        tcsetattr(tty_fd, TCSANOW, &tty_state);
+    }
+    if (tty_fd >= 0) {
+        close(tty_fd);
+        tty_fd = -1;
+    }
+#endif
+    fflush(stdout);
+    fflush(stderr);
 }
 
 io_addch(c) char c; {

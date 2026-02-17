@@ -67,7 +67,6 @@ init_display() {
 }
 
 end_display() {
-    clear_display();
     io_endwin();
 }
 
