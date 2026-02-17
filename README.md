@@ -13,6 +13,8 @@ Read it here https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
 The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while making it practical to build and run on modern Linux.
 
+Note: The original binaries can still be run in DOSBOX
+
 ## Repository Layout
 
 - `src/`: core C sources, headers, and Makefiles
