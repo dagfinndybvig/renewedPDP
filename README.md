@@ -58,6 +58,54 @@ This builds:
 - Core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - Utilities: `utils/plot`, `utils/colex`
 
+## Quick Start
+
+After building, run each program from its own directory so templates/data files are easy to load:
+
+```bash
+cd aa && ./aa
+cd ../bp && ./bp
+cd ../cl && ./cl
+cd ../cs && ./cs
+cd ../ia && ./ia
+cd ../iac && ./iac
+cd ../pa && ./pa
+```
+
+Common first interactive commands inside a program:
+
+- `get/template` (load a `.TEM` file)
+- `get/network` (load a `.NET` file where applicable)
+- `get/patterns` (load a `.PAT` file)
+- `run`/training commands specific to the selected program
+
+Utility tools:
+
+```bash
+./utils/plot
+./utils/colex
+```
+
+### Example Session (`bp`)
+
+This example uses files that already exist in `bp/` (`424.TEM`, `424.NET`, `424.PAT`).
+
+```bash
+cd bp
+./bp 424.TEM
+```
+
+Then at the interactive prompt:
+
+1. Enter `get` (moves into the `get/` submenu).
+2. Enter `network`, then at the filename prompt enter `424.NET`.
+3. Enter `patterns`, then at the filename prompt enter `424.PAT`.
+4. Press `Enter` on an empty line to leave the submenu.
+5. Enter `ptrain` to run pattern training.
+6. Enter `quit`, then `y` to exit.
+
+If you prefer another dataset, `bp/` also includes `REC.*`, `SEQ.*`, and `XOR.*` file sets.
+
 ## Clean
 
 ```bash
