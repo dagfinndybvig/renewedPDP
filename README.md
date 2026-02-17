@@ -248,3 +248,13 @@ ldd aa/aa
 ```
 
 If `ldd` shows missing libraries, install the required runtime/development packages (for example `libncurses`/`libtinfo`) and retry.
+
+### Filename Case Behavior on Linux
+
+- For user-supplied **read** operations (templates, network files, pattern files, command files, etc.), the program now attempts:
+   1. exact filename as entered
+   2. all-uppercase variant
+   3. all-lowercase variant
+- This helps with historical uppercase data files on case-sensitive Linux filesystems.
+- Example: entering `jets.tem` will successfully open `JETS.TEM` if present.
+- Write operations still use the filename exactly as entered.

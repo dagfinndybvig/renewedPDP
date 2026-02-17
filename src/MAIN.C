@@ -55,7 +55,7 @@ char  **argv;
 	if (argv[0][0] == '-'){
 		/* user wants to skip the template file */
 	}
-	else if ((in_stream = fopen(*argv, "r")) == NULL) {
+    else if ((in_stream = fopen_read_compat(*argv)) == NULL) {
 	    sprintf(err_string,"cannot open %s\n", *argv);
 	    put_error(err_string);
 	}
@@ -64,7 +64,7 @@ char  **argv;
 	    fclose(in_stream);
 	}
 	if (argc-- > 1) {
-	    if ((in_stream = fopen(*++argv, "r")) == NULL) {
+        if ((in_stream = fopen_read_compat(*++argv)) == NULL) {
 		sprintf(err_string,"cannot open %s\n", *argv);
 		put_error(err_string);
 	    }

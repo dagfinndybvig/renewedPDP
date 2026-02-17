@@ -111,7 +111,7 @@ define_net() {
     if ( sp == NULL) return(CONTINUE);
     strcpy(net_descr_name,sp);
 
-    if ((in_stream = fopen(sp, "r")) == NULL) {
+	if ((in_stream = fopen_read_compat(sp)) == NULL) {
 	in_stream = sv_instream;
 	return(put_error("Can't open network file."));
     }
@@ -741,7 +741,7 @@ read_weights() {
     if((str = get_command("File name for stored weights: ")) == NULL)
 	return(CONTINUE);
 
-    if ((iop = fopen(str, "r")) == NULL) {
+	if ((iop = fopen_read_compat(str)) == NULL) {
     	sprintf(err_string,"Cannot open weight file %s.",str);
 	return(put_error(err_string));
     }

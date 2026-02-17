@@ -143,6 +143,45 @@ char   *s;
     return(p);
 }
 
+FILE *fopen_read_compat(path)
+char *path;
+{
+    FILE *fp;
+    char tpath[BUFSIZ];
+    int i, len;
+
+    if ((fp = fopen(path, "r")) != NULL) {
+        return(fp);
+    }
+
+    len = strlen(path);
+    if (len >= BUFSIZ) {
+        return(NULL);
+    }
+
+    strcpy(tpath, path);
+    for (i = 0; i < len; i++) {
+        if (islower(tpath[i])) {
+            tpath[i] = toupper(tpath[i]);
+        }
+    }
+    if (strcmp(tpath, path) && ((fp = fopen(tpath, "r")) != NULL)) {
+        return(fp);
+    }
+
+    strcpy(tpath, path);
+    for (i = 0; i < len; i++) {
+        if (isupper(tpath[i])) {
+            tpath[i] = tolower(tpath[i]);
+        }
+    }
+    if (strcmp(tpath, path) && ((fp = fopen(tpath, "r")) != NULL)) {
+        return(fp);
+    }
+
+    return(NULL);
+}
+
 
 randint(low, high)
  int  low,high; {

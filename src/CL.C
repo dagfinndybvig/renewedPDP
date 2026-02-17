@@ -129,7 +129,7 @@ get_weights() {
 
     str = get_command("fname: ");
     if (str == NULL) return(CONTINUE);
-    if ((iop = fopen(str, "r")) == NULL) {
+    if ((iop = fopen_read_compat(str)) == NULL) {
 	return(put_error("Cannot open file"));
     }
     for (i = ninputs; i < nunits; i++) {

@@ -151,7 +151,7 @@ get_pats(pairs) int pairs; {
 
     sp = get_command("filename for patterns: ");
     if( sp == NULL) return(CONTINUE);
-    if ((iop = fopen(sp, "r")) == NULL) {
+    if ((iop = fopen_read_compat(sp)) == NULL) {
 	return(put_error("Can't open file for patterns."));
     }
     reset_patterns(pairs);

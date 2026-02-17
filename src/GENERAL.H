@@ -73,6 +73,7 @@ int     quit ();
 char   *emalloc ();
 char   *erealloc ();
 char   *strsave ();
+FILE   *fopen_read_compat ();
 double  atof ();
 
 int     rand ();

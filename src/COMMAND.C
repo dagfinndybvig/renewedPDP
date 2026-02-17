@@ -446,7 +446,7 @@ do_comfile() {
 
 	strcpy(savename,str);
 	
-	if ( (tmp_stream = fopen(str,"r")) == NULL) {
+	if ( (tmp_stream = fopen_read_compat(str)) == NULL) {
 		sprintf(err_string,"Cannot open %s.",str);
 		return(put_error(err_string));
 	}

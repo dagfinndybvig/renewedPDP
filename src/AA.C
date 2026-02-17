@@ -194,7 +194,7 @@ get_weights() {
 
     str = get_command("fname: ");
     if (str == NULL) return(CONTINUE);
-    if ((iop = fopen(str, "r")) == NULL) {
+    if ((iop = fopen_read_compat(str)) == NULL) {
     	sprintf(err_string,"Cannot open %s.",str);
 	return(put_error(err_string));
     }

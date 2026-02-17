@@ -413,7 +413,7 @@ char   *filename;
     struct Look *look;
     char     **look_table;
 
-    if ((fp = fopen(filename, "r")) == NULL) {
+	if ((fp = fopen_read_compat(filename)) == NULL) {
     	sprintf(string,"Cannot open look file %s.",filename);
 	return(put_error(string));
     }
