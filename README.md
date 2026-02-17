@@ -163,6 +163,23 @@ sudo apt-get update
 sudo apt-get install -y libncurses-dev
 ```
 
+## Smoke Tests
+
+Checked-in smoke scripts validate that `bp` and `pa` can start, load real dataset files, and exit cleanly in scripted mode.
+
+From repository root:
+
+```bash
+./scripts/smoke_all.sh
+```
+
+You can also run them individually:
+
+```bash
+./scripts/smoke_bp.sh
+./scripts/smoke_pa.sh
+```
+
 ## Additional Notes
 
 - The codebase intentionally remains mostly K&R-style C.
