@@ -1,0 +1,18 @@
+# Build artifacts (legacy C build)
+src/*.o
+src/*.a
+
+# Generated Linux compatibility symlinks
+src/*.c
+src/*.h
+
+# Built executables
+aa/aa
+bp/bp
+cl/cl
+cs/cs
+ia/ia
+iac/iac
+pa/pa
+utils/plot
+utils/colex

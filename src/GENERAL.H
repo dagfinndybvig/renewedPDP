@@ -48,7 +48,6 @@ extern int 	io_type; /* normal or reverse video */
 
 #else
 #include <strings.h>
-char   *sprintf ();
 #endif
 #include "display.h"
 
@@ -71,10 +70,8 @@ extern  char err_string[LINE_SIZE];
 typedef int boolean;
 
 int     quit ();
-char   *malloc ();
 char   *emalloc ();
 char   *erealloc ();
-char   *realloc ();
 char   *strsave ();
 double  atof ();
 

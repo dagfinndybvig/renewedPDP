@@ -24,13 +24,15 @@
 #include "command.h"
 #include "variable.h"
 #include <signal.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef MSDOS
 #include <memory.h>   /* for memcpy() in erealloc in general.c */
 #include <process.h>  /* for system() in do_exec in command.c */
 #endif
 
-FILE * in_stream = stdin;
+FILE * in_stream = NULL;
 int     Interrupt_flag = 0;
 int	single_flag = 0;
 int	step_size;
@@ -72,8 +74,7 @@ char somechar;
 char   *emalloc (n)		/* check return from malloc */
 unsigned    n;
 {
-    char   *p,
-           *malloc ();
+    char   *p;
 
     p = malloc(n);
     if (p == 0) {
@@ -90,7 +91,6 @@ unsigned    oldsize;
 unsigned    newsize;
 {
 #ifndef MSDOS
-    char   *realloc ();
     char   *p;
 
     p = realloc(ptr,newsize);
@@ -103,7 +103,6 @@ unsigned    newsize;
     
 #else (if MSDOS)
 
-    char *malloc();
     char *p;
     
     p = malloc(newsize);
@@ -207,6 +206,7 @@ init_general() {
     extern int     int_handler ();
 
     Interrupt_flag = 0;
+    in_stream = stdin;
     strcpy(step_string,Default_step_string);
     set_stepsize();
     init_commands();

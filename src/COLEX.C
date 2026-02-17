@@ -24,15 +24,17 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
 FILE *in, *out, *abut;
 int outcol[10];
-char inline[BUFSIZ];
+char input_line[BUFSIZ];
 char outstr[BUFSIZ];
 
 
 nextcol(count) int count; {
 	int i;
-	char *lp = inline;
+	char *lp = input_line;
 	char *sp = outstr;
 	
 	while(*lp && isspace(*lp)) *lp++;
@@ -73,11 +75,11 @@ main(argc,argv) int argc; char **argv; {
 	}
 	noc = oc;
 	if (abut) {
-	    while (fgets(inline,BUFSIZ,abut) != NULL) {
-		len = strlen(inline);
-		inline[len-1] = '\0';
-		fprintf(out,"%s ",inline);
-		if (fgets(inline,BUFSIZ,in) != NULL) {
+	    while (fgets(input_line,BUFSIZ,abut) != NULL) {
+		len = strlen(input_line);
+		input_line[len-1] = '\0';
+		fprintf(out,"%s ",input_line);
+		if (fgets(input_line,BUFSIZ,in) != NULL) {
 		  for (oc = 0; oc < noc; oc++) {
 		   if (nextcol(outcol[oc]) == NULL) {
 			fprintf(stderr,"Not enough columns.\n");
@@ -95,7 +97,7 @@ main(argc,argv) int argc; char **argv; {
 	    }
 	}
 	else {
-	    while (fgets(inline,BUFSIZ,in) != NULL) {
+	    while (fgets(input_line,BUFSIZ,in) != NULL) {
 		for (oc = 0; oc < noc; oc++) {
 		   if (nextcol(outcol[oc]) == NULL) {
 			fprintf(stderr,"Not enough columns.\n");
