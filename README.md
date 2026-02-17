@@ -180,6 +180,22 @@ You can also run them individually:
 ./scripts/smoke_pa.sh
 ```
 
+## Packaging Build Artifacts
+
+Create a shareable archive of Linux build outputs:
+
+```bash
+./scripts/package_artifacts.sh
+```
+
+This produces `renewedPDP-linux-artifacts.tar.gz` in the repository root and prints the archive contents.
+
+Optional custom output filename:
+
+```bash
+./scripts/package_artifacts.sh my-artifacts.tar.gz
+```
+
 ## Additional Notes
 
 - The codebase intentionally remains mostly K&R-style C.
