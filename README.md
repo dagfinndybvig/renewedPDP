@@ -196,6 +196,33 @@ Optional custom output filename:
 ./scripts/package_artifacts.sh my-artifacts.tar.gz
 ```
 
+### Unpacking on Host
+
+On the target host, in the directory containing the archive:
+
+```bash
+tar -xzf renewedPDP-linux-artifacts.tar.gz
+```
+
+To preview contents before unpacking:
+
+```bash
+tar -tzf renewedPDP-linux-artifacts.tar.gz
+```
+
+If unpacking into an existing `renewedPDP` source checkout, run from repo root so paths line up:
+
+```bash
+cd /path/to/renewedPDP
+tar -xzf /path/to/renewedPDP-linux-artifacts.tar.gz
+```
+
+Optional compatibility check on host:
+
+```bash
+file aa/aa
+```
+
 ## Additional Notes
 
 - The codebase intentionally remains mostly K&R-style C.
