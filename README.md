@@ -1,6 +1,8 @@
 # renewedPDP
 ------ WORK IN PROGRESS -------
 
+Note: The modernized C version kinda works, but there has been issues with the terminal, so I'm attempting a full port to Python in order to get fully modern I/O.
+
 
 `renewedPDP` is a preservation and modernisation project for the classic PDP software associated with:
 
