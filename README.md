@@ -41,8 +41,8 @@ From repository root:
 
 ```bash
 cd src
-make progs
 make utils
+make progs
 ```
 
 Outputs:
