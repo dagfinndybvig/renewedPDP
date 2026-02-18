@@ -15,6 +15,8 @@ class IACSession:
     def __init__(self, data_dir: Path) -> None:
         self.data_dir = data_dir
         self.model = IACModel()
+        self.dlevel: int = 0   # display level: 0=silent, >0 renders after cycle/test
+        self.slevel: int = 0   # save level (reserved for future log output)
 
     # ------------------------------------------------------------------
     # Token-stream execution (matches C get_command() token-at-a-time)
@@ -63,6 +65,8 @@ class IACSession:
                 count = int(count_tok)
             self.model.cycle(count)
             print(f"cycle complete: cycleno={self.model.cycleno}")
+            if self.dlevel > 0:
+                self.render_template_state()
             return True
 
         if v == "test":
@@ -72,6 +76,8 @@ class IACSession:
                 f"test complete: pattern={self.model.pattern_names[index]}"
                 f" cycleno={self.model.cycleno}"
             )
+            if self.dlevel > 0:
+                self.render_template_state()
             return True
 
         if v == "reset":
@@ -106,39 +112,6 @@ class IACSession:
         stream = CommandTokenStream()
         stream.feed_string(line)
         return self.run_stream(stream)
-
-
-        if cmd == "cycle":
-            count = int(parts[1]) if len(parts) > 1 else None
-            self.model.cycle(count)
-            print(f"cycle complete: cycleno={self.model.cycleno}")
-            return True
-
-        if cmd == "test":
-            if len(parts) < 2:
-                raise ValueError("test requires a pattern name or index")
-            index = self.model.test_pattern(parts[1])
-            print(
-                f"test complete: pattern={self.model.pattern_names[index]} cycleno={self.model.cycleno}"
-            )
-            return True
-
-        if cmd == "reset":
-            self.model.reset_state()
-            print("state reset")
-            return True
-
-        if cmd in {"state", "display"}:
-            self.render_template_state()
-            return True
-
-        if cmd == "input" and len(parts) >= 3:
-            self.model.set_input(parts[1], float(parts[2]))
-            print(f"input set: {parts[1]}={float(parts[2]):.4f}")
-            return True
-
-        print(f"unsupported command (initial port): {stripped}")
-        return True
 
     def load_template(self, template_path: str | Path) -> None:
         spec = parse_template_file(str(template_path), base_dir=self.data_dir)
@@ -248,8 +221,11 @@ class IACSession:
 
     def _handle_set_tokens(self, key: str, stream: CommandTokenStream) -> None:
         k = key.lower()
-        if k in {"dlevel", "slevel"}:
-            stream.next_required("set dlevel/slevel value")
+        if k == "dlevel":
+            self.dlevel = int(stream.next_required("set dlevel value"))
+            return
+        if k == "slevel":
+            self.slevel = int(stream.next_required("set slevel value"))
             return
         if k == "param":
             param_name = stream.next_required("set param name")
