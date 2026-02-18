@@ -46,8 +46,6 @@
 
 `iac` runs correctly during interactive use, but quitting (`quit` -> `y`) can leave the parent shell terminal in a broken state (no echo, garbled prompt, or input appearing corrupted).
 
-The Python port (`pdp-iac`) does not have this issue. **The C version is now considered legacy/reference only.**
-
 ### What has been tried
 
 1. **Command input / newline handling** — adjusted `readline()` in `COMMAND.C`. Improved responsiveness, did not fix terminal corruption.
@@ -59,7 +57,7 @@ The Python port (`pdp-iac`) does not have this issue. **The C version is now con
 
 ### Current status
 
-No in-process fix has been 100% reliable. The Python port is the recommended way to run `iac`. For users who must use the C binary, the recovery command is:
+The Python port is the future. For users who must use the C binary, note the recovery command just in case:
 
 ```bash
 stty sane; tput rmcup 2>/dev/null || true; tput cnorm 2>/dev/null || true; reset
