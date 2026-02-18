@@ -184,38 +184,92 @@ class IACSession:
             return self.model.unit_names
         return None
 
-    def _render_look_grid(self, entry: TemplateEntry, values: list) -> list[str]:
-        """Return list of row strings for a look or label_look entry.
+    def _render_combined_look_group(
+        self,
+        entries: list[TemplateEntry],
+        base_x: int,
+    ) -> list[str]:
+        """Render all entries sharing a LOO file as a single combined table.
 
-        Each cell occupies exactly `spacing` characters so that all entries
-        sharing the same LOO file print in aligned columns regardless of type.
+        In the C curses display every entry is placed at an absolute screen
+        column (x_token).  Entries sharing a LOO and the same y_token are
+        overlaid on the same grid — e.g. for JETS.TEM the 14-char column
+        stride holds extinput at offset 0, unit-name at offset 3, and
+        activation at offset 10, producing one coherent row per LOO row.
+
+        Each cell is assembled into a (char, reverse_video) buffer so that
+        negative numeric values can be highlighted with ANSI reverse-video,
+        matching the C curses standout mode, without displacing column
+        positions (ANSI escape bytes are invisible to the layout).
         """
-        table = entry.look_table
+        _REVERSE = "\033[7m"
+        _RESET   = "\033[0m"
+
+        table = entries[0].look_table
         assert table is not None
-        spacing = entry.spacing or 1
+        spacing = entries[0].spacing or 1
+
+        entry_values = [self._values_for_variable(e.variable or "") for e in entries]
+
         lines: list[str] = []
         for row in range(table.rows):
-            cells: list[str] = []
+            row_parts: list[str] = []
             for col in range(table.cols):
                 cell_token = table.cells[row * table.cols + col]
+
+                # buf: list of (char, is_reverse)
+                buf: list[tuple[str, bool]] = [(" ", False)] * spacing
+
                 if cell_token is None:
-                    # spacer cell — use '.' centred, rest of column blank
-                    cells.append(("." + " " * (spacing - 1)))
-                    continue
-                try:
-                    index = int(cell_token)
-                except ValueError:
-                    cells.append(cell_token[:spacing].ljust(spacing))
-                    continue
-                if index >= len(values):
-                    cells.append("?".ljust(spacing))
-                    continue
-                text = self._cell_to_string(
-                    values, index, digits=entry.digits, scale=entry.scale
-                )
-                # value occupies `digits` chars; pad to `spacing` total
-                cells.append(text.ljust(spacing))
-            lines.append("".join(cells).rstrip())
+                    buf[0] = (".", False)
+                else:
+                    try:
+                        index = int(cell_token)
+                    except ValueError:
+                        index = -1
+
+                    for e, values in zip(entries, entry_values):
+                        if values is None:
+                            continue
+                        x_off = int(e.x_token) - base_x
+                        if index < 0 or index >= len(values):
+                            text = "?"
+                            reverse = False
+                        else:
+                            val = values[index]
+                            text = self._cell_to_string(
+                                values, index,
+                                digits=e.digits, scale=e.scale,
+                            )
+                            # Negative numeric values use reverse-video (C standout)
+                            reverse = (
+                                isinstance(val, (int, float))
+                                and e.scale is not None
+                                and (val * e.scale + 0.0000001) < 0
+                            )
+                        for i, ch in enumerate(text):
+                            pos = x_off + i
+                            if 0 <= pos < spacing:
+                                buf[pos] = (ch, reverse)
+
+                # Convert (char, reverse) buffer to string with ANSI codes.
+                # Group consecutive same-style characters to minimise escapes.
+                cell_str = ""
+                in_reverse = False
+                for ch, rev in buf:
+                    if rev and not in_reverse:
+                        cell_str += _REVERSE
+                        in_reverse = True
+                    elif not rev and in_reverse:
+                        cell_str += _RESET
+                        in_reverse = False
+                    cell_str += ch
+                if in_reverse:
+                    cell_str += _RESET
+                row_parts.append(cell_str)
+
+            # Strip trailing plain spaces (not inside escape sequences)
+            lines.append("".join(row_parts).rstrip())
         return lines
 
     def render_template_state(self) -> None:
@@ -224,28 +278,32 @@ class IACSession:
             print("no template loaded")
             return
 
-        # Collect the entries that have look tables, preserving order
-        look_entries: list[TemplateEntry] = [
-            e for e in template.entries
-            if e.template_type in {"look", "label_look"} and e.look_table is not None
-        ]
-
-        # Print scalar variable entries (type == "variable" / "floatvar") first
+        # Print scalar variable entries (type "variable" / "floatvar")
         for entry in template.entries:
             if entry.template_type == "variable" and entry.variable:
-                vals = self._values_for_variable(entry.variable)
-                if vals is not None and isinstance(vals, list) and len(vals) == 1:
-                    print(f"{entry.name}: {vals[0]}")
-                elif entry.variable.lower() == "cycleno":
+                if entry.variable.lower() == "cycleno":
                     print(f"cycleno: {self.model.cycleno}")
 
-        # Print each look/label_look block with a clean header
-        for entry in look_entries:
-            values = self._values_for_variable(entry.variable or "")
-            if values is None:
-                continue
-            print(f"\n{entry.name}:")
-            for line in self._render_look_grid(entry, values):
+        # Group look/label_look entries by their look_file so entries
+        # sharing a LOO are rendered together in one combined table.
+        from collections import defaultdict
+        groups: dict[str, list[TemplateEntry]] = defaultdict(list)
+        group_order: list[str] = []
+        for entry in template.entries:
+            if entry.template_type in {"look", "label_look"} and entry.look_table is not None:
+                key = (entry.look_file or "").lower()
+                if key not in groups:
+                    group_order.append(key)
+                groups[key].append(entry)
+
+        for key in group_order:
+            group = groups[key]
+            # base_x = smallest x_token in the group (leftmost entry)
+            base_x = min(int(e.x_token) for e in group)
+            # Build a header from the variable names in display-level order
+            var_names = " / ".join(e.variable or e.name for e in group)
+            print(f"\n{var_names}:")
+            for line in self._render_combined_look_group(group, base_x):
                 print("  " + line)
 
 
