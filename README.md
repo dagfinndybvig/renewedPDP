@@ -15,7 +15,7 @@ Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
 The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while providing a clean, modern Python port as the recommended way to run the models.
 
-## Recommended: Python version
+## Getting there: Python version
 
 A Python port is available in the `pythonPDP/` folder. It is the **recommended** way to run the models — no compiler, no terminal quirks, no curses dependencies. Invocation is identical to the C originals.
 
