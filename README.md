@@ -17,7 +17,7 @@ The original sources are late-1980s C code with DOS and early Unix assumptions. 
 
 ## C version (legacy / modification)
 
-The original C sources are preserved in `src/` and remain buildable on modern Linux with the right tweaks. Use this if you need to reproduce the exact original terminal behaviour or compare against the Python port.
+The original C sources are preserved in `src/` and remain buildable on modern Linux with the right tweaks. Use this if you need to reproduce the exact original terminal behaviour or compare against the Python port. A build for Ubuntu/Linux is included in compressed form.
 
 ### Known issue
 
