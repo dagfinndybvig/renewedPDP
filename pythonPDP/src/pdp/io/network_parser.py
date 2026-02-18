@@ -13,6 +13,7 @@ class NetworkSpec:
     noutputs: int | None
     constraints: dict[str, float]
     weights: list[list[float]]
+    biases: list[float] | None = None  # per-unit bias values (length nunits), if present
 
 
 def parse_network_file(path: str | Path, base_dir: str | Path | None = None) -> NetworkSpec:
@@ -22,6 +23,7 @@ def parse_network_file(path: str | Path, base_dir: str | Path | None = None) -> 
     definitions: dict[str, int] = {}
     constraints: dict[str, float] = {}
     network_rows: list[str] = []
+    biases_row: str | None = None
 
     section: str | None = None
     for raw_line in text.splitlines():
@@ -51,6 +53,10 @@ def parse_network_file(path: str | Path, base_dir: str | Path | None = None) -> 
 
         if section == "network":
             network_rows.append(line)
+            continue
+
+        if section == "biases":
+            biases_row = line
 
     if "nunits" not in definitions:
         raise ValueError(f"Missing nunits in network file: {resolved}")
@@ -78,10 +84,27 @@ def parse_network_file(path: str | Path, base_dir: str | Path | None = None) -> 
             weight_row.append(constraints[symbol])
         weights.append(weight_row)
 
+    biases: list[float] | None = None
+    if biases_row is not None:
+        if len(biases_row) != nunits:
+            raise ValueError(
+                f"Biases row has length {len(biases_row)}; expected {nunits} in {resolved}"
+            )
+        bias_values: list[float] = []
+        for symbol in biases_row:
+            if symbol == ".":
+                bias_values.append(0.0)
+            elif symbol in constraints:
+                bias_values.append(constraints[symbol])
+            else:
+                raise ValueError(f"Unknown bias symbol '{symbol}' in {resolved}")
+        biases = bias_values
+
     return NetworkSpec(
         nunits=nunits,
         ninputs=definitions.get("ninputs"),
         noutputs=definitions.get("noutputs"),
         constraints=constraints,
         weights=weights,
+        biases=biases,
     )

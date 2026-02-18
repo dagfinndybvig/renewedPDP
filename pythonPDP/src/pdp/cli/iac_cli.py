@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import shlex
 from pathlib import Path
 from typing import Sequence
 
@@ -9,44 +8,105 @@ from pdp.io.network_parser import parse_network_file
 from pdp.io.pattern_parser import parse_pattern_file
 from pdp.io.template_parser import TemplateEntry, parse_template_file
 from pdp.models.iac import IACModel
+from pdp.runtime.command_stream import CommandTokenStream
 
 
 class IACSession:
     def __init__(self, data_dir: Path) -> None:
         self.data_dir = data_dir
         self.model = IACModel()
-        self.pending_quit_confirm = False
+
+    # ------------------------------------------------------------------
+    # Token-stream execution (matches C get_command() token-at-a-time)
+    # ------------------------------------------------------------------
+
+    def run_stream(self, stream: CommandTokenStream) -> bool:
+        """Consume tokens from *stream* and dispatch commands.
+
+        Returns True normally; False if 'quit y' was received.
+        """
+        while not stream.is_empty():
+            tok = stream.next()
+            if tok is None:
+                break
+            keep = self._dispatch(tok, stream)
+            if not keep:
+                return False
+        return True
+
+    def _dispatch(self, verb: str, stream: CommandTokenStream) -> bool:
+        """Handle a single command verb, pulling further tokens from *stream*."""
+        v = verb.lower()
+
+        if v == "quit":
+            confirm = stream.next()
+            if confirm and confirm.lower().startswith("y"):
+                return False
+            # no confirm token — ask interactively only if at TTY
+            return True
+
+        if v == "set":
+            key = stream.next_required("set")
+            self._handle_set_tokens(key, stream)
+            return True
+
+        if v == "get":
+            target = stream.next_required("get")
+            self._handle_get_tokens(target, stream)
+            return True
+
+        if v == "cycle":
+            count_tok = stream.peek()
+            count: int | None = None
+            if count_tok and count_tok.lstrip("-").isdigit():
+                stream.next()
+                count = int(count_tok)
+            self.model.cycle(count)
+            print(f"cycle complete: cycleno={self.model.cycleno}")
+            return True
+
+        if v == "test":
+            pattern_ref = stream.next_required("test")
+            index = self.model.test_pattern(pattern_ref)
+            print(
+                f"test complete: pattern={self.model.pattern_names[index]}"
+                f" cycleno={self.model.cycleno}"
+            )
+            return True
+
+        if v == "reset":
+            self.model.reset_state()
+            print("state reset")
+            return True
+
+        if v in {"state", "display"}:
+            self.render_template_state()
+            return True
+
+        if v == "input":
+            unit = stream.next_required("input")
+            strength = float(stream.next_required("input strength"))
+            self.model.set_input(unit, strength)
+            print(f"input set: {unit}={strength:.4f}")
+            return True
+
+        # Silently ignore display/UI-only commands
+        if v in {"newstart", "step", "printout"}:
+            return True
+
+        print(f"unsupported command: {verb}")
+        return True
+
+    # ------------------------------------------------------------------
+    # Backward-compat: line-oriented interface (used by tests / old code)
+    # ------------------------------------------------------------------
 
     def run_line(self, line: str) -> bool:
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            return True
+        """Run a single pre-tokenised line (space-separated tokens)."""
+        stream = CommandTokenStream()
+        stream.feed_string(line)
+        return self.run_stream(stream)
 
-        if self.pending_quit_confirm:
-            self.pending_quit_confirm = False
-            if stripped.lower().startswith("y"):
-                return False
-            return True
-
-        parts = shlex.split(stripped)
-        if not parts:
-            return True
-
-        cmd = parts[0].lower()
-
-        if cmd == "quit":
-            if len(parts) >= 2 and parts[1].lower().startswith("y"):
-                return False
-            self.pending_quit_confirm = True
-            return True
-
-        if cmd == "set":
-            self._handle_set(parts)
-            return True
-
-        if cmd == "get":
-            self._handle_get(parts)
-            return True
 
         if cmd == "cycle":
             count = int(parts[1]) if len(parts) > 1 else None
@@ -80,8 +140,8 @@ class IACSession:
         print(f"unsupported command (initial port): {stripped}")
         return True
 
-    def load_template(self, template_path: str) -> None:
-        spec = parse_template_file(template_path, base_dir=self.data_dir)
+    def load_template(self, template_path: str | Path) -> None:
+        spec = parse_template_file(str(template_path), base_dir=self.data_dir)
         self.model.load_template(spec)
         print(f"template loaded: entries={len(spec.entries)}")
 
@@ -186,73 +246,93 @@ class IACSession:
             if entry.template_type in {"look", "label_look"}:
                 self._render_look_entry(entry)
 
-    def _handle_set(self, parts: list[str]) -> None:
-        if len(parts) < 3:
-            raise ValueError("set command requires arguments")
-
-        if parts[1].lower() in {"dlevel", "slevel"}:
+    def _handle_set_tokens(self, key: str, stream: CommandTokenStream) -> None:
+        k = key.lower()
+        if k in {"dlevel", "slevel"}:
+            stream.next_required("set dlevel/slevel value")
             return
-
-        if parts[1].lower() == "param" and len(parts) >= 4:
-            self.model.set_param(parts[2], float(parts[3]))
+        if k == "param":
+            param_name = stream.next_required("set param name")
+            param_val = stream.next_required("set param value")
+            self.model.set_param(param_name, float(param_val))
             return
+        # bare: set <param> <value>
+        val = stream.next_required(f"set {key} value")
+        try:
+            self.model.set_param(key, float(val))
+        except ValueError:
+            pass  # silently ignore unknown bare set keys
 
-        self.model.set_param(parts[1], float(parts[2]))
-
-    def _handle_get(self, parts: list[str]) -> None:
-        if len(parts) < 2:
-            raise ValueError("get command requires a target")
-
-        target = parts[1].lower()
-        if target == "network":
-            if len(parts) < 3:
-                raise ValueError("get network requires a file")
-            spec = parse_network_file(parts[2], base_dir=self.data_dir)
+    def _handle_get_tokens(self, target: str, stream: CommandTokenStream) -> None:
+        t = target.lower()
+        if t == "network":
+            filename = stream.next_required("get network filename")
+            spec = parse_network_file(filename, base_dir=self.data_dir)
             self.model.load_network(spec)
             print(f"network loaded: nunits={self.model.nunits}")
             return
-
-        if target == "unames":
-            if len(parts) < 3:
-                raise ValueError("get unames requires names ending with 'end'")
-            names = []
-            for token in parts[2:]:
-                if token.lower() == "end":
-                    break
-                names.append(token)
+        if t == "unames":
+            names = stream.consume_until("end")
             self.model.set_unit_names(names)
             print(f"unit names loaded: {len(names)}")
             return
-
-        if target == "patterns":
-            if len(parts) < 3:
-                raise ValueError("get patterns requires a file")
+        if t == "patterns":
+            filename = stream.next_required("get patterns filename")
             if self.model.nunits <= 0:
                 raise ValueError("Load network before patterns")
             pattern_set = parse_pattern_file(
-                parts[2], expected_inputs=self.model.nunits, base_dir=self.data_dir
+                filename, expected_inputs=self.model.nunits, base_dir=self.data_dir
             )
             self.model.load_patterns(pattern_set)
             print(f"patterns loaded: {len(pattern_set.names)}")
             return
+        print(f"unsupported get target: {target}")
 
-        print(f"unsupported get target (initial port): {target}")
+    # Keep old dict-of-parts helpers for backward compat with tests
+    def _handle_set(self, parts: list[str]) -> None:
+        stream = CommandTokenStream()
+        stream.feed_string(" ".join(parts[1:]))
+        self._handle_set_tokens(stream.next_required("set key"), stream)
+
+    def _handle_get(self, parts: list[str]) -> None:
+        stream = CommandTokenStream()
+        stream.feed_string(" ".join(parts[1:]))
+        self._handle_get_tokens(stream.next_required("get target"), stream)
 
 
 def _run_script(session: IACSession, script_path: Path) -> bool:
-    for line in script_path.read_text(encoding="utf-8", errors="ignore").splitlines():
-        try:
-            keep_running = session.run_line(line)
-        except Exception as exc:
-            print(f"error: {exc}")
-            return False
-        if not keep_running:
-            return True
+    stream = CommandTokenStream()
+    stream.feed_file(script_path)
+    try:
+        keep_running = session.run_stream(stream)
+    except Exception as exc:
+        print(f"error: {exc}")
+        return False
     return True
 
 
 def _interactive_loop(session: IACSession) -> int:
-    print("pythonPDP iac (initial port). Type 'quit' then 'y' to exit.")
+    """REPL / piped-stdin runner that mirrors C get_command() behaviour.
+
+    When stdin is a pipe/file, read all input at once and run as a script.
+    When stdin is a real terminal, use a persistent stream so multi-line
+    commands work across prompts.
+    """
+    import sys
+
+    if not sys.stdin.isatty():
+        text = sys.stdin.read()
+        stream = CommandTokenStream()
+        stream.feed_string(text)
+        try:
+            session.run_stream(stream)
+        except Exception as exc:
+            print(f"error: {exc}")
+            return 1
+        return 0
+
+    print("pythonPDP iac. Type 'quit y' to exit.")
+    stream = CommandTokenStream()
     while True:
         try:
             line = input("iac: ")
@@ -262,10 +342,13 @@ def _interactive_loop(session: IACSession) -> int:
             print()
             break
 
+        stream.feed_string(line)
+
         try:
-            keep_running = session.run_line(line)
+            keep_running = session.run_stream(stream)
         except Exception as exc:
             print(f"error: {exc}")
+            stream = CommandTokenStream()  # reset on error
             continue
 
         if not keep_running:
@@ -275,11 +358,27 @@ def _interactive_loop(session: IACSession) -> int:
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Initial Python port of IAC")
-    parser.add_argument("template", nargs="?", help="Template file path (accepted for compatibility)")
-    parser.add_argument("command_file", nargs="?", help="Command file (.STR style)")
-    parser.add_argument("--data-dir", default="iac", help="Base directory for relative data file lookups")
-    parser.add_argument("--interactive", action="store_true", help="Enter interactive mode after command file")
+    parser = argparse.ArgumentParser(
+        description="Python port of the PDP iac model.\n\n"
+        "Invocation matches the C binary:\n"
+        "  cd iac/  &&  pdp-iac JETS.TEM JETS.STR"
+    )
+    parser.add_argument(
+        "template", nargs="?",
+        help="Template file (.TEM), resolved relative to cwd",
+    )
+    parser.add_argument(
+        "command_file", nargs="?",
+        help="Command/script file (.STR), resolved relative to cwd",
+    )
+    parser.add_argument(
+        "--data-dir", default=".",
+        help="Base directory for data file lookups (default: cwd)",
+    )
+    parser.add_argument(
+        "--interactive", action="store_true",
+        help="Enter interactive mode after running command file",
+    )
     return parser
 
 
@@ -287,14 +386,23 @@ def main() -> int:
     parser = build_arg_parser()
     args = parser.parse_args()
 
-    data_dir = Path(args.data_dir)
+    # data_dir: explicit flag wins; otherwise the directory containing the
+    # template (or cwd if no template given) — same as the C binary behaviour
+    # where all files are resolved relative to the working directory.
+    if args.data_dir != ".":
+        data_dir = Path(args.data_dir)
+    elif args.template:
+        data_dir = Path(args.template).resolve().parent
+    else:
+        data_dir = Path(".")
+
     session = IACSession(data_dir=data_dir)
 
     if args.template:
         try:
-            session.load_template(args.template)
+            session.load_template(Path(args.template))
         except Exception as exc:
-            print(f"error: failed to load template '{args.template}': {exc}")
+            print(f"error loading template '{args.template}': {exc}")
             return 1
 
     if args.command_file:

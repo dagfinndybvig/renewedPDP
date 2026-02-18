@@ -1,80 +1,128 @@
 # pythonPDP
 
-This folder contains all planning and implementation materials for migrating `renewedPDP` from legacy C/curses code to a modern Python codebase.
+Modern Python port of the [renewedPDP](https://github.com/dagfinndybvig/renewedPDP) models, originally from McClelland & Rumelhart's 1987 *Parallel Distributed Processing* explorations software.
 
-## Contents
+## Ported models
 
-- `MIGRATION_PLAN.md` — full phased migration plan
-- `MODULE_MAPPING.md` — legacy-to-new module mapping and ownership boundaries
-- `PARITY_CHECKLIST.md` — output/behavior parity criteria and validation matrix
+| CLI command | Model | Source file |
+|-------------|-------|-------------|
+| `pdp-iac`   | Interactive Activation and Competition | `src/pdp/cli/iac_cli.py` |
+| `pdp-pa`    | Pattern Associator | `src/pdp/cli/pa_cli.py` |
 
-## Initial implementation status
+Remaining models (`aa`, `bp`, `cl`, `cs`, `ia`) are planned — see [MIGRATION_PLAN.md](MIGRATION_PLAN.md).
 
-- Python package scaffold is present in `pythonPDP/src/pdp/`
-- first active model port is `iac`
-- initial CLI entrypoint: `pdp-iac` (`pdp.cli.iac_cli`)
-- current parser coverage: legacy `.NET` (network) format
-- added parser coverage: legacy `.PAT` pattern format (named input patterns)
-- added parser coverage: legacy `.TEM` templates with `look`/`label_look` support via `.LOO`
-- `iac` command support now includes `get patterns` and `test <pattern>`
-- `iac` command support includes `state` / `display` for template-driven mapped output
-- tests live in `pythonPDP/tests/`
+## Setting up the virtual environment
 
-## Migration goals
+From the repository root (one-time setup):
 
-1. Preserve original model behavior and file format compatibility (`.TEM`, `.PAT`, `.NET`, `.STR`, `.LOO`, `.WTS`).
-2. Replace brittle terminal handling with modern, reliable I/O.
-3. Keep historical datasets and workflows runnable.
-4. Enable maintainable future development.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e pythonPDP
+```
 
-## Near-term recommendation
+The `-e` flag installs the package in editable mode so source edits take effect immediately. The `pdp-iac` and `pdp-pa` commands are registered as entry points and become available on your `PATH` once the venv is activated.
 
-Begin with a compatibility-first Python implementation of `iac` as the reference model and terminal test case, then generalize shared runtime services across the other programs (`aa`, `bp`, `cl`, `cs`, `ia`, `pa`).
+To activate the venv in subsequent sessions:
 
-## Quick run
+```bash
+source .venv/bin/activate
+```
 
-From repository root:
+## Running the programs
+
+Invocation mirrors the original C binaries exactly. Change into the model's data directory first, then pass the template and command files as positional arguments:
+
+```bash
+cd iac/
+pdp-iac JETS.TEM JETS.STR          # load template + run script, then exit
+pdp-iac JETS.TEM JETS.STR --interactive  # run script, then enter REPL
+pdp-iac JETS.TEM                   # load template, enter REPL immediately
+```
+
+```bash
+cd pa/
+pdp-pa JETS.TEM JETS.STR           # load template + run script, then exit
+pdp-pa JETS.TEM JETS.STR --interactive   # run script, then enter REPL
+pdp-pa JETS.TEM                    # load template, enter REPL immediately
+```
+
+All filenames inside `.STR` command files are resolved relative to the directory you run the command from (i.e. the model data directory), matching the C original.
+
+### Command syntax
+
+Commands can be written one per line, space-separated on a single line, or any mix — the parser reads one token at a time, exactly as the C `get_command()` function did with `fscanf`. These are all equivalent:
+
+```
+get network JETS.NET
+```
+```
+get
+network
+JETS.NET
+```
+
+### `pdp-iac` commands
+
+```
+get network <file>          load a .NET file
+get unames <n1> <n2> … end  assign unit names
+set dlevel <n>              display level
+set slevel <n>              settling level
+set param <name> <value>    set a model parameter (max, min, rest, alpha, gamma, decay, estr)
+cycle [n]                   run n settling cycles (default from template)
+test <pattern>              clamp a named pattern and cycle
+reset                       reset activations to resting level
+input <unit> <strength>     set external input on a unit
+state / display             print current template-formatted state
+quit [y]                    exit
+```
+
+### `pdp-pa` commands
+
+```
+get network <file>          load a .NET file
+get patterns <file>         load input+target pattern pairs from a .PAT file
+set nepochs <n>
+set lflag <0|1>
+set param lrate <v>
+set param noise <v>
+set param temp <v>
+set param ecrit <v>
+set mode linear <0|1>       linear output
+set mode lt <0|1>           threshold-linear output
+set mode cs <0|1>           continuous sigmoid
+set mode hebb <0|1>         Hebb learning rule (default: delta rule)
+strain                      sequential training for nepochs
+ptrain                      permuted (random-order) training for nepochs
+tall                        one pass through patterns without weight update
+test <pattern>              single forward pass on a named pattern
+reset                       zero weights
+state / display             print current state
+quit [y]                    exit
+```
+
+## Running the tests
 
 ```bash
 cd pythonPDP
-PYTHONPATH=src python -m pdp.cli.iac_cli iac/JETS.TEM iac/JETS.STR --data-dir ../iac --interactive
+python -m pytest tests/ -v
 ```
 
-Run tests:
+## Smoke tests and parity checks
 
-```bash
-cd pythonPDP
-PYTHONPATH=src python -m unittest discover -s tests -v
-```
+These scripts live in `pythonPDP/scripts/` and are meant to be run from the repository root.
 
-Run `iac` smoke check:
+| Script | Purpose |
+|--------|---------|
+| `scripts/smoke_iac_python.sh` | Basic `iac` load + cycle smoke check |
+| `scripts/smoke_iac_test_python.sh` | `iac` pattern clamping smoke check |
+| `scripts/smoke_iac_template_state_python.sh` | `iac` template/state display smoke check |
+| `scripts/parity_iac_c_vs_python.sh` | Compare cycle logs between C and Python `iac` across multiple JETS regimes |
+| `scripts/check_all_pythonpdp.sh` | Run all of the above in sequence |
 
-```bash
-./pythonPDP/scripts/smoke_iac_python.sh
-```
+## Planning and mapping documents
 
-Run `iac` pattern/test smoke check:
-
-```bash
-./pythonPDP/scripts/smoke_iac_test_python.sh
-```
-
-Run `iac` template/state smoke check:
-
-```bash
-./pythonPDP/scripts/smoke_iac_template_state_python.sh
-```
-
-Run C-vs-Python `iac` parity check:
-
-```bash
-./pythonPDP/scripts/parity_iac_c_vs_python.sh
-```
-
-This runs multiple `JETS` regimes (default, extinput+activation, and `gb` mode), compares cycle logs generated from legacy `iac` and Python `iac`, and reports max absolute difference per regime.
-
-Run all pythonPDP checks in one command:
-
-```bash
-./pythonPDP/scripts/check_all_pythonpdp.sh
-```
+- [MIGRATION_PLAN.md](MIGRATION_PLAN.md) — phased migration plan
+- [MODULE_MAPPING.md](MODULE_MAPPING.md) — legacy C → Python module mapping
+- [PARITY_CHECKLIST.md](PARITY_CHECKLIST.md) — output/behavior parity criteria

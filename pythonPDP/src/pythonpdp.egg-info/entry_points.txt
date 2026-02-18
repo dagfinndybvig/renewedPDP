@@ -1,0 +1,3 @@
+[console_scripts]
+pdp-iac = pdp.cli.iac_cli:main
+pdp-pa = pdp.cli.pa_cli:main

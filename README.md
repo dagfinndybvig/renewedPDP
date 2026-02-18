@@ -1,60 +1,139 @@
-WORK IN PROGRESS!
-
 # renewedPDP
 
-`renewedPDP` is a preservation/portability copy of the classic PDP software associated with:
+`renewedPDP` is a preservation and modernisation project for the classic PDP software associated with:
 
 - *Explorations in Parallel Distributed Processing: A Handbook of Models, Programs, and Exercises*
 - J. L. McClelland and D. E. Rumelhart
 
 ![handbook](https://github.com/user-attachments/assets/756591a1-e7b8-48c4-b69c-25d4f1219791)
 
-Read it here https://web.stanford.edu/group/pdplab/originalpdphandbook/
+Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
-The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while making it practical to build and run on modern Linux.
+The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while providing a clean, modern Python port as the recommended way to run the models.
 
-Note: The original binaries can still be run in DOSBOX
+## Recommended: Python version
 
-## Repository Layout
+A Python port is available in the `pythonPDP/` folder. It is the **recommended** way to run the models — no compiler, no terminal quirks, no curses dependencies. Invocation is identical to the C originals.
+
+### Setup (one time)
+
+From the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e pythonPDP
+```
+
+This installs the `pdp-iac` and `pdp-pa` commands into your virtual environment.
+
+To activate the venv in future sessions:
+
+```bash
+source .venv/bin/activate
+```
+
+### Running the models
+
+Change into the model's data directory and invoke the CLI with a template file and an optional command script — exactly as you would with the C binary:
+
+```bash
+cd iac/
+pdp-iac JETS.TEM JETS.STR
+```
+
+```bash
+cd pa/
+pdp-pa JETS.TEM JETS.STR
+```
+
+That's it. The program loads the template, executes the script, and exits. To stay in the interactive REPL after the script finishes, add `--interactive`:
+
+```bash
+cd iac/
+pdp-iac JETS.TEM JETS.STR --interactive
+```
+
+To start a bare REPL with only a template loaded (no script):
+
+```bash
+cd iac/
+pdp-iac JETS.TEM
+```
+
+### Command syntax
+
+Commands can be typed one per line or space-separated — the parser reads one token at a time, so these are identical:
+
+```
+get network JETS.NET
+```
+```
+get
+network
+JETS.NET
+```
+
+### `pdp-iac` quick command reference
+
+```
+get network <file>          load a .NET file
+get unames <n1> … end       assign unit names
+set dlevel <n>              display level
+set slevel <n>              settling level
+set param <name> <value>    set a model parameter (max, min, rest, alpha, gamma, decay, estr)
+cycle [n]                   run settling cycles
+test <pattern>              clamp a named pattern and cycle to settling
+reset                       reset activations to resting level
+input <unit> <strength>     apply external input to a unit
+state / display             print template-formatted network state
+quit [y]                    exit
+```
+
+### `pdp-pa` quick command reference
+
+```
+get network <file>          load a .NET file
+get patterns <file>         load input+target pattern pairs from a .PAT file
+set nepochs <n>
+set param lrate <v>
+set param noise <v>
+set param temp <v>
+set param ecrit <v>
+set mode linear <0|1>       linear output mode
+set mode lt <0|1>           threshold-linear output mode
+set mode cs <0|1>           continuous sigmoid output mode
+set mode hebb <0|1>         Hebb learning rule (default: delta rule)
+strain                      sequential training for nepochs
+ptrain                      permuted (random-order) training for nepochs
+tall                        one pass through patterns without weight update
+test <pattern>              single forward pass on a named pattern
+reset                       zero weights
+state / display             print current state
+quit [y]                    exit
+```
+
+For fuller documentation, setup instructions, tests, and parity scripts see [pythonPDP/README.md](pythonPDP/README.md).
+
+---
+
+## C version (legacy / reference)
+
+The original C sources are preserved in `src/` and remain buildable on modern Linux. Use this if you need to reproduce the exact original terminal behaviour or compare against the Python port.
+
+### Known issue
+
+Terminal recovery after quitting `iac` is improved but not yet fully reliable across all environments. The Python port does not have this issue.
+
+See [TODO.md](TODO.md) for current status and debugging notes.
+
+## Repository layout
 
 - `src/`: core C sources, headers, and Makefiles
-- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and executable output locations
+- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and C executable output locations
 - `utils/`: utility tool outputs (`plot`, `colex`)
-- `*.ARC`: archived/original distribution artifacts preserved in repo
-
-## Known Issue
-
-Terminal recovery after quitting `iac` is improved but not yet fully reliable across all environments.
-
-See [TODO.md](TODO.md) for the current status, attempted fixes, and next debugging steps.
-
-## Portability Work Completed
-
-The following Linux portability/build updates were applied and verified in this branch.
-
-1. **Build flags and linker inputs updated in `src/Makefile` and `src/MAKEFILE`**
-   - `CFLAGS` set to `-std=gnu89 -fcommon`
-   - removed `-ltermlib` (typically unavailable on modern Linux)
-   - retained `-lcurses`
-
-2. **Automatic case-compatibility for legacy uppercase source names**
-   - added `linux_compat_links` target to create lowercase symlinks for `*.C`/`*.H`
-   - integrated into `make progs` and `make utils`
-
-3. **Phony target cleanup**
-   - added `.PHONY` entries to prevent unintended implicit-rule behavior for names such as `plot` and `colex`
-
-4. **Hard compile blockers fixed in `src/GENERAL.H` and `src/GENERAL.C`**
-   - removed obsolete declarations conflicting with modern libc (`sprintf`, `malloc`, `realloc`)
-   - added required standard headers (`stdlib.h`, `string.h`)
-   - moved global `in_stream` initialization from file scope (`stdin`) to runtime in `init_general()`
-
-5. **Hard compile blocker fixed in `src/COLEX.C`**
-   - renamed variable `inline` to `input_line` (`inline` is a C keyword in modern compilers)
-   - added missing standard headers (`stdlib.h`, `string.h`)
-
-6. **Build artifact ignores added**
-   - added `.gitignore` entries for generated objects, archives, symlinks, and built executables
+- `pythonPDP/`: Python port, tests, and migration planning documents
+- `*.ARC`: archived original distribution artifacts
 
 ## Build (Ubuntu/Linux)
 
@@ -71,7 +150,7 @@ Outputs:
 - core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - utility executables: `utils/plot`, `utils/colex`
 
-## Quick Start
+## Quick start (C binaries)
 
 Run each model from its own directory so template and data files resolve naturally:
 
@@ -90,16 +169,8 @@ Common first commands in interactive sessions:
 - `get/template` (load a `.TEM` file)
 - `get/network` (load a `.NET` file, where applicable)
 - `get/patterns` (load a `.PAT` file)
-- training/run commands for the selected program
 
-Run utility tools:
-
-```bash
-./utils/plot
-./utils/colex
-```
-
-### Interactive Example (`bp`)
+### Interactive example (`bp`)
 
 This example uses files already present in `bp/`: `424.TEM`, `424.NET`, `424.PAT`.
 
@@ -117,29 +188,11 @@ At the prompt:
 5. Enter `ptrain`
 6. Enter `quit`, then `y`
 
-Other built-in `bp` dataset families include `REC.*`, `SEQ.*`, and `XOR.*`.
+Other built-in `bp` dataset families: `REC.*`, `SEQ.*`, `XOR.*`.
 
-### Stable launcher for `iac` terminal sessions
+### Batch example (`bp`)
 
-If your terminal occasionally remains in a bad state after quitting `iac`, use the safe wrapper:
-
-```bash
-./scripts/run_iac_safe.sh iac/JETS.TEM iac/JETS.STR
-```
-
-If arguments are omitted, it defaults to `iac/JETS.TEM iac/JETS.STR`.
-
-For the most robust isolation, run `iac` inside a dedicated PTY wrapper:
-
-```bash
-./scripts/run_iac_pty.sh iac/JETS.TEM iac/JETS.STR
-```
-
-This keeps your shell terminal separate from `iac`'s curses session.
-
-### Batch Example (`bp`)
-
-You can script a session by passing a command file as the second CLI argument:
+Pass a command file as the second argument:
 
 ```bash
 cd bp
@@ -155,15 +208,7 @@ EOF
 ./bp 424.TEM example.com
 ```
 
-Notes:
-
-- first argument: template file (`.TEM`)
-- second argument: command script consumed by the same parser used interactively
-- `quit y` ends the run cleanly
-
-### Batch Example (`pa`)
-
-`pa/` includes a matched `JETS` set: `JETS.TEM`, `JETS.NET`, `JETS.PAT`.
+### Batch example (`pa`)
 
 ```bash
 cd pa
@@ -179,6 +224,29 @@ EOF
 ./pa JETS.TEM example.com
 ```
 
+### Stable launcher for `iac` terminal sessions
+
+If your terminal occasionally remains in a bad state after quitting `iac`, use the safe wrapper:
+
+```bash
+./scripts/run_iac_safe.sh iac/JETS.TEM iac/JETS.STR
+```
+
+For the most robust isolation, run `iac` inside a dedicated PTY wrapper:
+
+```bash
+./scripts/run_iac_pty.sh iac/JETS.TEM iac/JETS.STR
+```
+
+## Portability changes applied to the C sources
+
+1. **Build flags updated** — `CFLAGS` set to `-std=gnu89 -fcommon`; removed `-ltermlib`; retained `-lcurses`
+2. **Case-compatibility links** — `linux_compat_links` make target creates lowercase symlinks for `*.C`/`*.H` files
+3. **Phony target cleanup** — `.PHONY` entries prevent unintended implicit-rule behaviour
+4. **Compile blockers fixed in `GENERAL.H` / `GENERAL.C`** — removed obsolete declarations conflicting with modern libc; added `stdlib.h`, `string.h`
+5. **Compile blocker fixed in `COLEX.C`** — renamed variable `inline` → `input_line`; added missing headers
+6. **`.gitignore`** — ignores generated objects, archives, symlinks, and built executables
+
 ## Maintenance
 
 Clean object/library artifacts:
@@ -188,109 +256,47 @@ cd src
 make clean
 ```
 
-Install dependencies if curses development files are missing:
+Install missing curses development headers:
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y libncurses-dev
 ```
 
-## Terminal Recovery (if a TUI session wedges the shell)
-
-If the terminal becomes unresponsive or stops echoing after quitting one of the interactive programs, run:
+## Terminal recovery (if a TUI session wedges the shell)
 
 ```bash
 stty sane; tput rmcup 2>/dev/null || true; reset
 ```
 
-Then press `Ctrl+J` once if needed to force a newline redraw.
+Then press `Ctrl+J` once if needed.
 
-## Smoke Tests
-
-Checked-in smoke scripts validate that `bp` and `pa` can start, load real dataset files, and exit cleanly in scripted mode.
+## Smoke tests
 
 From repository root:
 
 ```bash
-./scripts/smoke_all.sh
-```
-
-You can also run them individually:
-
-```bash
+./scripts/smoke_all.sh    # bp + pa C binaries
 ./scripts/smoke_bp.sh
 ./scripts/smoke_pa.sh
 ```
 
-## Packaging Build Artifacts
-
-Create a shareable archive of Linux build outputs:
+## Packaging build artifacts
 
 ```bash
 ./scripts/package_artifacts.sh
+# produces renewedPDP-linux-artifacts.tar.gz
 ```
 
-This produces `renewedPDP-linux-artifacts.tar.gz` in the repository root and prints the archive contents.
-
-Optional custom output filename:
-
-```bash
-./scripts/package_artifacts.sh my-artifacts.tar.gz
-```
-
-### Unpacking on Host
-
-On the target host, in the directory containing the archive:
+To unpack on a target host:
 
 ```bash
 tar -xzf renewedPDP-linux-artifacts.tar.gz
 ```
 
-To preview contents before unpacking:
+## Additional notes
 
-```bash
-tar -tzf renewedPDP-linux-artifacts.tar.gz
-```
-
-If unpacking into an existing `renewedPDP` source checkout, run from repo root so paths line up:
-
-```bash
-cd /path/to/renewedPDP
-tar -xzf /path/to/renewedPDP-linux-artifacts.tar.gz
-```
-
-Optional compatibility check on host:
-
-```bash
-file aa/aa
-```
-
-## Additional Notes
-
-- The codebase intentionally remains mostly K&R-style C.
-- Compiler warnings are expected on modern toolchains; the portability target here is successful build and execution.
+- The C codebase intentionally remains mostly K&R-style C. Compiler warnings are expected.
 - Historical upstream notes are preserved in `src/CHANGES.TXT`.
-
-### Linking and Runtime Dependencies
-
-- Binaries produced by the default build are **dynamically linked**.
-- On Linux, they typically depend on shared libraries such as `libc`, `libm`, `libncurses`, and `libtinfo`.
-
-You can verify on the target host with:
-
-```bash
-file aa/aa
-ldd aa/aa
-```
-
-If `ldd` shows missing libraries, install the required runtime/development packages (for example `libncurses`/`libtinfo`) and retry.
-
-### Filename Case Behavior on Linux
-
-- For user-supplied **read** operations (templates, network files, pattern files, command files, etc.), the program now attempts:
-   1. exact filename as entered
-   2. all-uppercase variant
-   3. all-lowercase variant
-- This helps with historical uppercase data files on case-sensitive Linux filesystems.
-- Example: entering `jets.tem` will successfully open `JETS.TEM` if present.
-- Write operations still use the filename exactly as entered.
+- Binaries are dynamically linked; verify dependencies with `ldd aa/aa`.
+- For user-supplied filenames the C version attempts exact, uppercase, and lowercase variants in order, which helps with historical uppercase data files on case-sensitive Linux.
