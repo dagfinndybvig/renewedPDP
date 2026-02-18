@@ -1,7 +1,7 @@
 # renewedPDP
 ------ WORK IN PROGRESS -------
 
-Note: The modernized C version kinda works, but there has been issues with the terminal, so I'm attempting a full port to Python in order to get fully modern I/O.
+Note: The modernized C version kinda works, but there has been issues with the terminal, so I'm attempting a port to Python in order to get fully modern I/O.
 
 
 `renewedPDP` is a preservation and modernisation project for the classic PDP software associated with:
@@ -15,119 +15,15 @@ Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
 The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while providing a clean, modern C/Python port as the recommended way to run the models.
 
-## Getting there: Python version
+## C version (legacy / modification)
 
-A Python port is available in the `pythonPDP/` folder. It is the **intended** way to run the models — no compiler, no terminal quirks, no curses dependencies. Invocation is identical to the C originals.
-
-### Setup (one time)
-
-From the repository root:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e pythonPDP
-```
-
-This installs the `pdp-iac` and `pdp-pa` commands into your virtual environment.
-
-To activate the venv in future sessions:
-
-```bash
-source .venv/bin/activate
-```
-
-### Running the models
-
-Change into the model's data directory and invoke the CLI with a template file and an optional command script — exactly as you would with the C binary:
-
-```bash
-cd iac/
-pdp-iac JETS.TEM JETS.STR
-```
-
-```bash
-cd pa/
-pdp-pa JETS.TEM JETS.STR
-```
-
-That's it. The program loads the template, executes the script, and exits. To stay in the interactive REPL after the script finishes, add `--interactive`:
-
-```bash
-cd iac/
-pdp-iac JETS.TEM JETS.STR --interactive
-```
-
-To start a bare REPL with only a template loaded (no script):
-
-```bash
-cd iac/
-pdp-iac JETS.TEM
-```
-
-### Command syntax
-
-Commands can be typed one per line or space-separated — the parser reads one token at a time, so these are identical:
-
-```
-get network JETS.NET
-```
-```
-get
-network
-JETS.NET
-```
-
-### `pdp-iac` quick command reference
-
-```
-get network <file>          load a .NET file
-get unames <n1> … end       assign unit names
-set dlevel <n>              display level
-set slevel <n>              settling level
-set param <name> <value>    set a model parameter (max, min, rest, alpha, gamma, decay, estr)
-cycle [n]                   run settling cycles
-test <pattern>              clamp a named pattern and cycle to settling
-reset                       reset activations to resting level
-input <unit> <strength>     apply external input to a unit
-state / display             print template-formatted network state
-quit [y]                    exit
-```
-
-### `pdp-pa` quick command reference
-
-```
-get network <file>          load a .NET file
-get patterns <file>         load input+target pattern pairs from a .PAT file
-set nepochs <n>
-set param lrate <v>
-set param noise <v>
-set param temp <v>
-set param ecrit <v>
-set mode linear <0|1>       linear output mode
-set mode lt <0|1>           threshold-linear output mode
-set mode cs <0|1>           continuous sigmoid output mode
-set mode hebb <0|1>         Hebb learning rule (default: delta rule)
-strain                      sequential training for nepochs
-ptrain                      permuted (random-order) training for nepochs
-tall                        one pass through patterns without weight update
-test <pattern>              single forward pass on a named pattern
-reset                       zero weights
-state / display             print current state
-quit [y]                    exit
-```
-
-For fuller documentation, setup instructions, tests, and parity scripts see [pythonPDP/README.md](pythonPDP/README.md).
-
----
-
-## C version (legacy / reference)
-
-The original C sources are preserved in `src/` and remain buildable on modern Linux. Use this if you need to reproduce the exact original terminal behaviour or compare against the Python port.
+The original C sources are preserved in `src/` and remain buildable on modern Linux with the right tweaks. Use this if you need to reproduce the exact original terminal behaviour or compare against the Python port.
 
 ### Known issue
 
-Terminal recovery after quitting `iac` is improved but not yet fully reliable across all environments. The Python port does not have this issue.
+Terminal recovery after quitting `iac` is improved but not yet fully reliable across all environments. The Python will not have this issue.
+
+Compiling it in your own environment might help.
 
 See [TODO.md](TODO.md) for current status and debugging notes.
 
@@ -301,6 +197,114 @@ tar -xzf renewedPDP-linux-artifacts.tar.gz
 ## Additional notes
 
 - The C codebase intentionally remains mostly K&R-style C. Compiler warnings are expected.
-- Historical upstream notes are preserved in `src/CHANGES.TXT`.
+- Historical upstream notes are preserved in `src/CHANGES.TXT
+
+# In progress: Python version
+
+A Python port is underway in the `pythonPDP/` folder. It is the **intended** way to run the models — inherently cross platform, no terminal quirks, no curses dependencies. Invocation is similar to the C originals.
+
+### Setup (one time)
+
+From the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e pythonPDP
+```
+
+This installs the `pdp-iac` and `pdp-pa` commands into your virtual environment.
+
+To activate the venv in future sessions:
+
+```bash
+source .venv/bin/activate
+```
+
+### Running the models
+
+Change into the model's data directory and invoke the CLI with a template file and an optional command script — exactly as you would with the C binary:
+
+```bash
+cd iac/
+pdp-iac JETS.TEM JETS.STR
+```
+
+```bash
+cd pa/
+pdp-pa JETS.TEM JETS.STR
+```
+
+That's it. The program loads the template, executes the script, and exits. To stay in the interactive REPL after the script finishes, add `--interactive`:
+
+```bash
+cd iac/
+pdp-iac JETS.TEM JETS.STR --interactive
+```
+
+To start a bare REPL with only a template loaded (no script):
+
+```bash
+cd iac/
+pdp-iac JETS.TEM
+```
+
+### Command syntax
+
+Commands can be typed one per line or space-separated — the parser reads one token at a time, so these are identical:
+
+```
+get network JETS.NET
+```
+```
+get
+network
+JETS.NET
+```
+
+### `pdp-iac` quick command reference
+
+```
+get network <file>          load a .NET file
+get unames <n1> … end       assign unit names
+set dlevel <n>              display level
+set slevel <n>              settling level
+set param <name> <value>    set a model parameter (max, min, rest, alpha, gamma, decay, estr)
+cycle [n]                   run settling cycles
+test <pattern>              clamp a named pattern and cycle to settling
+reset                       reset activations to resting level
+input <unit> <strength>     apply external input to a unit
+state / display             print template-formatted network state
+quit [y]                    exit
+```
+
+### `pdp-pa` quick command reference
+
+```
+get network <file>          load a .NET file
+get patterns <file>         load input+target pattern pairs from a .PAT file
+set nepochs <n>
+set param lrate <v>
+set param noise <v>
+set param temp <v>
+set param ecrit <v>
+set mode linear <0|1>       linear output mode
+set mode lt <0|1>           threshold-linear output mode
+set mode cs <0|1>           continuous sigmoid output mode
+set mode hebb <0|1>         Hebb learning rule (default: delta rule)
+strain                      sequential training for nepochs
+ptrain                      permuted (random-order) training for nepochs
+tall                        one pass through patterns without weight update
+test <pattern>              single forward pass on a named pattern
+reset                       zero weights
+state / display             print current state
+quit [y]                    exit
+```
+
+For fuller documentation, setup instructions, tests, and parity scripts see [pythonPDP/README.md](pythonPDP/README.md).
+
+---
+
+
 - Binaries are dynamically linked; verify dependencies with `ldd aa/aa`.
 - For user-supplied filenames the C version attempts exact, uppercase, and lowercase variants in order, which helps with historical uppercase data files on case-sensitive Linux.
