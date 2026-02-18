@@ -18,18 +18,25 @@
   - commands: `get network`, `get patterns`, `set nepochs`, `set param`, `set mode`, `strain`, `ptrain`, `tall`, `test <pattern>`, `reset`, `state`/`display`, `quit`
   - delta rule and Hebb learning, linear/threshold-linear/continuous-sigmoid output modes
 
-- **Invocation** — both CLIs match C binary exactly: `cd <model>/ && pdp-<model> TEMPLATE.TEM SCRIPT.STR`
+- **`bp` model** — fully ported (`pdp-bp`)
+  - backpropagation model
+  - loads `.NET` (BP block-format with `%r` sparse connectivity), `.PAT`, `.WTS`; saves `.WTS`
+  - commands: `get network`, `get patterns`, `get weights`, `save weights`, `set nepochs`, `set ecrit`, `set param lrate/momentum/tmax/wrange`, `set mode lgrain epoch|pattern`, `set mode cascade`, `strain`, `ptrain`, `tall`, `test <pattern>`, `reset`, `newstart`, `state`/`display`, `quit`
+  - feedforward multi-layer backprop with momentum; epoch-grain and pattern-grain weight updates
+  - float-valued definitions (`ecrit`, `wrange`) parsed from `.NET` definitions: section
+  - BP-format network parser: new `pdp.io.bp_network_parser` module (handles `%r` block syntax, sparse weight connectivity, random/positive/negative/linked constraints, weight init, `.WTS` file read/write)
+
+- **Invocation** — all CLIs match C binary exactly: `cd <model>/ && pdp-<model> TEMPLATE.TEM SCRIPT.STR`
   - script files work with space-separated or one-token-per-line input (mirrors C `fscanf` token-at-a-time)
 
-- **26/26 tests passing**
+- **63/63 tests passing**
 
 ### Remaining models to port (suggested order)
 
-1. `bp` — backpropagation
-2. `cl` — competitive learning
-3. `cs` — constraint satisfaction
-4. `aa` — auto-associator
-5. `ia` — interactive activation (word perception variant)
+1. `cl` — competitive learning
+2. `cs` — constraint satisfaction
+3. `aa` — auto-associator
+4. `ia` — interactive activation (word perception variant)
 
 ---
 
