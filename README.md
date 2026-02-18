@@ -17,7 +17,7 @@ The original sources are late-1980s C code with DOS and early Unix assumptions. 
 
 ## Getting there: Python version
 
-A Python port is available in the `pythonPDP/` folder. It is the **recommended** way to run the models — no compiler, no terminal quirks, no curses dependencies. Invocation is identical to the C originals.
+A Python port is available in the `pythonPDP/` folder. It is the **intended** way to run the models — no compiler, no terminal quirks, no curses dependencies. Invocation is identical to the C originals.
 
 ### Setup (one time)
 
