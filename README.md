@@ -198,6 +198,8 @@ tar -xzf renewedPDP-linux-artifacts.tar.gz
 
 - The C codebase intentionally remains mostly K&R-style C. Compiler warnings are expected.
 - Historical upstream notes are preserved in `src/CHANGES.TXT
+- Binaries are dynamically linked; verify dependencies with `ldd aa/aa`.
+- For user-supplied filenames the C version attempts exact, uppercase, and lowercase variants in order, which helps with historical uppercase data files on case-sensitive Linux.
 
 # In progress: Python version
 
@@ -304,7 +306,3 @@ quit [y]                    exit
 For fuller documentation, setup instructions, tests, and parity scripts see [pythonPDP/README.md](pythonPDP/README.md).
 
 ---
-
-
-- Binaries are dynamically linked; verify dependencies with `ldd aa/aa`.
-- For user-supplied filenames the C version attempts exact, uppercase, and lowercase variants in order, which helps with historical uppercase data files on case-sensitive Linux.
