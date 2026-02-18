@@ -13,7 +13,7 @@ Note: The modernized C version kinda works, but there has been issues with the t
 
 Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
-The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while providing a clean, modern C/Python port as the recommended way to run the models.
+The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while working towards a clean, modern Python port as the recommended way to run the models.
 
 ## C version (legacy / modification)
 
