@@ -131,14 +131,24 @@ class IACSession:
         return None
 
     def _format_legacy_number(self, value: float, digits: int, scale: float) -> str:
+        """Format a float as the C display_float() does: scale, truncate, right-justify in `digits` chars."""
         scaled = value * scale
         scaled += 0.0000001 if scaled >= 0 else -0.0000001
         intval = int(scaled)
 
+        negative = intval < 0
         abs_val = abs(intval)
-        max_abs = (10**digits) - 1 if digits > 0 else 0
+        max_abs = (10 ** digits) - 1 if digits > 0 else 0
         if abs_val > max_abs:
             return "*" * max(1, digits)
+
+        if negative:
+            # C uses reverse-video for negatives; in plain text we prefix '-'
+            # and use digits-1 characters for the magnitude so total width == digits
+            mag_width = max(1, digits - 1)
+            mag_max = (10 ** mag_width) - 1
+            mag = min(abs_val, mag_max)
+            return f"-{mag:>{mag_width}d}"
 
         return f"{abs_val:>{max(1, digits)}d}"
 
@@ -174,39 +184,39 @@ class IACSession:
             return self.model.unit_names
         return None
 
-    def _render_look_entry(self, entry: TemplateEntry) -> None:
+    def _render_look_grid(self, entry: TemplateEntry, values: list) -> list[str]:
+        """Return list of row strings for a look or label_look entry.
+
+        Each cell occupies exactly `spacing` characters so that all entries
+        sharing the same LOO file print in aligned columns regardless of type.
+        """
         table = entry.look_table
-        if table is None or entry.variable is None:
-            return
-
-        values = self._values_for_variable(entry.variable)
-        if values is None:
-            return
-
-        print(f"[{entry.name}] {entry.template_type} -> {entry.variable}")
+        assert table is not None
         spacing = entry.spacing or 1
+        lines: list[str] = []
         for row in range(table.rows):
-            display_cells: list[str] = []
+            cells: list[str] = []
             for col in range(table.cols):
                 cell_token = table.cells[row * table.cols + col]
                 if cell_token is None:
-                    display_cells.append(".".ljust(spacing))
+                    # spacer cell — use '.' centred, rest of column blank
+                    cells.append(("." + " " * (spacing - 1)))
                     continue
-
-                index = self._resolve_template_index(cell_token)
-                if index is None:
-                    display_cells.append(cell_token.ljust(spacing))
+                try:
+                    index = int(cell_token)
+                except ValueError:
+                    cells.append(cell_token[:spacing].ljust(spacing))
                     continue
-
+                if index >= len(values):
+                    cells.append("?".ljust(spacing))
+                    continue
                 text = self._cell_to_string(
-                    values,
-                    index,
-                    digits=entry.digits,
-                    scale=entry.scale,
+                    values, index, digits=entry.digits, scale=entry.scale
                 )
-                display_cells.append(text.ljust(spacing))
-
-            print("  " + "".join(display_cells).rstrip())
+                # value occupies `digits` chars; pad to `spacing` total
+                cells.append(text.ljust(spacing))
+            lines.append("".join(cells).rstrip())
+        return lines
 
     def render_template_state(self) -> None:
         template = self.model.template
@@ -214,10 +224,30 @@ class IACSession:
             print("no template loaded")
             return
 
-        print(f"template state: {template.source_path.name}")
+        # Collect the entries that have look tables, preserving order
+        look_entries: list[TemplateEntry] = [
+            e for e in template.entries
+            if e.template_type in {"look", "label_look"} and e.look_table is not None
+        ]
+
+        # Print scalar variable entries (type == "variable" / "floatvar") first
         for entry in template.entries:
-            if entry.template_type in {"look", "label_look"}:
-                self._render_look_entry(entry)
+            if entry.template_type == "variable" and entry.variable:
+                vals = self._values_for_variable(entry.variable)
+                if vals is not None and isinstance(vals, list) and len(vals) == 1:
+                    print(f"{entry.name}: {vals[0]}")
+                elif entry.variable.lower() == "cycleno":
+                    print(f"cycleno: {self.model.cycleno}")
+
+        # Print each look/label_look block with a clean header
+        for entry in look_entries:
+            values = self._values_for_variable(entry.variable or "")
+            if values is None:
+                continue
+            print(f"\n{entry.name}:")
+            for line in self._render_look_grid(entry, values):
+                print("  " + line)
+
 
     def _handle_set_tokens(self, key: str, stream: CommandTokenStream) -> None:
         k = key.lower()
