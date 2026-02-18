@@ -1,4 +1,6 @@
 # renewedPDP
+------ WORK IN PROGRESS -------
+
 
 `renewedPDP` is a preservation and modernisation project for the classic PDP software associated with:
 
