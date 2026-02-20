@@ -50,60 +50,6 @@ Outputs:
 - core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - utility executables: `utils/plot`, `utils/colex`
 
-### Interactive example (`bp`)
-
-This example uses files already present in `bp/`: `424.TEM`, `424.NET`, `424.PAT`.
-
-```bash
-cd bp
-./bp 424.TEM
-```
-
-At the prompt:
-
-1. Enter `get` (opens the `get/` submenu)
-2. Enter `network`, then provide `424.NET`
-3. Enter `patterns`, then provide `424.PAT`
-4. Press `Enter` on a blank line to leave the submenu
-5. Enter `ptrain`
-6. Enter `quit`, then `y`
-
-Other built-in `bp` dataset families: `REC.*`, `SEQ.*`, `XOR.*`.
-
-### Batch example (`bp`)
-
-Pass a command file as the second argument:
-
-```bash
-cd bp
-cat > example.com << 'EOF'
-get
-network 424.NET
-patterns 424.PAT
-
-ptrain
-quit y
-EOF
-
-./bp 424.TEM example.com
-```
-
-### Batch example (`pa`)
-
-```bash
-cd pa
-cat > example.com << 'EOF'
-get
-network JETS.NET
-patterns JETS.PAT
-
-ptrain
-quit y
-EOF
-
-./pa JETS.TEM example.com
-```
-
 ### Stable launcher for `iac` terminal sessions
 
 If your terminal occasionally remains in a bad state after quitting `iac`, use the safe wrapper:
@@ -127,7 +73,7 @@ For the most robust isolation, run `iac` inside a dedicated PTY wrapper:
 5. **Compile blocker fixed in `COLEX.C`** — renamed variable `inline` → `input_line`; added missing headers
 6. **`.gitignore`** — ignores generated objects, archives, symlinks, and built executables
 
-## Maintenance
+## Note
 
 Clean object/library artifacts:
 
@@ -207,28 +153,11 @@ source .venv/bin/activate
 
 Change into the model's data directory and invoke the CLI with a template file and an optional command script — exactly as you would with the C binary:
 
-```bash
-cd iac/
-pdp-iac JETS.TEM JETS.STR
-```
-
-```bash
-cd pa/
-pdp-pa JETS.TEM JETS.STR
-```
-
-That's it. The program loads the template, executes the script, and exits. To stay in the interactive REPL after the script finishes, add `--interactive`:
+To stay in the interactive REPL after the script finishes, add `--interactive`:
 
 ```bash
 cd iac/
 pdp-iac JETS.TEM JETS.STR --interactive
-```
-
-To start a bare REPL with only a template loaded (no script):
-
-```bash
-cd iac/
-pdp-iac JETS.TEM
 ```
 
 ### Command syntax
