@@ -50,26 +50,6 @@ Outputs:
 - core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - utility executables: `utils/plot`, `utils/colex`
 
-## Quick start (C binaries)
-
-Run each model from its own directory so template and data files resolve naturally:
-
-```bash
-cd aa && ./aa
-cd ../bp && ./bp
-cd ../cl && ./cl
-cd ../cs && ./cs
-cd ../ia && ./ia
-cd ../iac && ./iac
-cd ../pa && ./pa
-```
-
-Common first commands in interactive sessions:
-
-- `get/template` (load a `.TEM` file)
-- `get/network` (load a `.NET` file, where applicable)
-- `get/patterns` (load a `.PAT` file)
-
 ### Interactive example (`bp`)
 
 This example uses files already present in `bp/`: `424.TEM`, `424.NET`, `424.PAT`.
