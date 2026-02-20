@@ -50,20 +50,6 @@ Outputs:
 - core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - utility executables: `utils/plot`, `utils/colex`
 
-### Stable launcher for `iac` terminal sessions
-
-If your terminal occasionally remains in a bad state after quitting `iac`, use the safe wrapper:
-
-```bash
-./scripts/run_iac_safe.sh iac/JETS.TEM iac/JETS.STR
-```
-
-For the most robust isolation, run `iac` inside a dedicated PTY wrapper:
-
-```bash
-./scripts/run_iac_pty.sh iac/JETS.TEM iac/JETS.STR
-```
-
 ## Portability changes applied to the C sources
 
 1. **Build flags updated** — `CFLAGS` set to `-std=gnu89 -fcommon`; removed `-ltermlib`; retained `-lcurses`
@@ -82,7 +68,7 @@ cd src
 make clean
 ```
 
-Install missing curses development headers:
+Install curses development headers:
 
 ```bash
 sudo apt-get update
