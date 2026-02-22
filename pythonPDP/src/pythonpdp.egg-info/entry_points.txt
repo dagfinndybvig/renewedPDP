@@ -1,4 +1,0 @@
-[console_scripts]
-pdp-bp = pdp.cli.bp_cli:main
-pdp-iac = pdp.cli.iac_cli:main
-pdp-pa = pdp.cli.pa_cli:main

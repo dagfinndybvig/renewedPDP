@@ -1,12 +1,16 @@
-# Build artifacts (legacy C build)
+# Build artifacts (Linux/GCC)
 src/*.o
 src/*.a
+
+# Build artifacts (Windows/MSVC)
+src/*.obj
+src/*.lib
 
 # Generated Linux compatibility symlinks
 src/*.c
 src/*.h
 
-# Built executables
+# Built executables (Linux)
 aa/aa
 bp/bp
 cl/cl
@@ -16,3 +20,22 @@ iac/iac
 pa/pa
 utils/plot
 utils/colex
+
+# Built executables (Windows)
+aa/*.exe
+bp/*.exe
+cl/*.exe
+cs/*.exe
+ia/*.exe
+iac/*.exe
+pa/*.exe
+utils/*.exe
+
+# Python bytecodes and caches
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Python packaging artifacts
+**/*.egg-info/
