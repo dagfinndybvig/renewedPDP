@@ -323,7 +323,13 @@ readline() {
 
     else {
       rp = Line_Buf;
+#ifdef _WIN32
+      /* On Windows, PDCurses cbreak() only affects getch(), not getc(stdin).
+         Use PDCurses getch() so keypresses return immediately without Enter. */
+      while ( (ch = getch()) != '\n' && ch != '\r' && ch != -1) {
+#else
       while ( (ch = getc(in_stream)) != '\n' && ch != '\r' && ch != EOF) {
+#endif
 	if (ch == '\b' || ch == '\177') {
 	  if (lp > Line_Buf) {
 	    io_addch('');
