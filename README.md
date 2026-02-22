@@ -115,7 +115,7 @@ All Windows changes are guarded by `#ifdef _WIN32` / `#if !defined(_WIN32)` so t
 2. **`src/GENERAL.H`** — skips `<strings.h>` (POSIX); maps `index → strchr` and `sleep(n) → Sleep(n*1000)` via forward-declared Win32 `Sleep()`
 3. **`src/IO.C`** — guards the four `#ifndef MSDOS` blocks around `termios.h`, `unistd.h`, `/dev/tty`, and `tcgetattr/tcsetattr` with an additional `&& !defined(_WIN32)` condition
 
-## Note
+## Notes on Linux
 
 Clean object/library artifacts:
 
