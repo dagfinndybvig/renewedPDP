@@ -39,3 +39,6 @@ __pycache__/
 
 # Python packaging artifacts
 **/*.egg-info/
+
+# PDCurses (local Windows build dependency — build separately)
+pdcurses/

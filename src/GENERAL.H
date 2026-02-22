@@ -36,18 +36,16 @@ ineffective. */
 #endif
 
 
-#ifdef MSDOS
+#ifdef _WIN32
 #include <string.h>
-
-#include <conio.h>  /* contains declaration of kbhit() */
-
-extern int	sprintf();
-extern char	*index(); /* defined in general.c */
-extern char 	xxtemp[200];
-extern int 	io_type; /* normal or reverse video */
-
+/* Forward-declare Sleep to avoid pulling in windows.h (which conflicts with 'boolean') */
+extern void __stdcall Sleep(unsigned long dwMilliseconds);
+#define index  strchr
+#define sleep(n) Sleep((n)*1000)
 #else
+#ifndef MSDOS
 #include <strings.h>
+#endif
 #endif
 #include "display.h"
 
@@ -89,7 +87,11 @@ int     rand ();
 /* #define rnd() ((float)rand()/2147483647.0) faster to multiply -- jlm */
 #define rnd() ((float)rand()*0.4656612875e-9) 
 
+#ifdef _WIN32
+#define strindex strchr
+#else
 #define strindex index
+#endif
 
 #endif
 

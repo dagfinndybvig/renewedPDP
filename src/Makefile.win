@@ -1,0 +1,114 @@
+# Makefile.win -- nmake build file for Windows/MSVC
+# Usage (from a Developer Command Prompt or after vcvars64.bat):
+#   cd src
+#   nmake /f Makefile.win
+#
+# Requires PDCurses built in ..\pdcurses\wincon\pdcurses.lib
+# (cd ..\pdcurses\wincon && nmake /f Makefile.vc)
+
+CC     = cl
+CFLAGS = /TC /W3 /nologo /I.. /I..\pdcurses /D_CRT_SECURE_NO_WARNINGS
+PDCLIB = ..\pdcurses\wincon\pdcurses.lib
+WINLIBS = user32.lib gdi32.lib advapi32.lib
+LIBS   = libpc.lib $(PDCLIB) $(WINLIBS)
+
+AADEST   = ..\aa
+BPDEST   = ..\bp
+CLDEST   = ..\cl
+IADEST   = ..\ia
+IACDEST  = ..\iac
+CSDEST   = ..\cs
+PADEST   = ..\pa
+
+SOURCES = PATTERNS.C MAIN.C VARIABLE.C TEMPLATE.C GENERAL.C DISPLAY.C IO.C COMMAND.C
+OBJECTS = PATTERNS.obj MAIN.obj VARIABLE.obj TEMPLATE.obj GENERAL.obj DISPLAY.obj IO.obj COMMAND.obj
+
+all: $(AADEST)\aa.exe $(BPDEST)\bp.exe $(CLDEST)\cl.exe $(CSDEST)\cs.exe \
+     $(IADEST)\ia.exe $(IACDEST)\iac.exe $(PADEST)\pa.exe
+
+# Core library
+libpc.lib: $(OBJECTS)
+	lib /nologo /OUT:libpc.lib $(OBJECTS)
+
+# Per-program object files
+AA.obj: AA.C
+	$(CC) $(CFLAGS) /c AA.C
+
+BP.obj: BP.C
+	$(CC) $(CFLAGS) /c BP.C
+
+CL.obj: CL.C
+	$(CC) $(CFLAGS) /c CL.C
+
+CS.obj: CS.C
+	$(CC) $(CFLAGS) /c CS.C
+
+IA.obj: IA.C
+	$(CC) $(CFLAGS) /c IA.C
+
+IAAUX.obj: IAAUX.C
+	$(CC) $(CFLAGS) /c IAAUX.C
+
+IATOP.obj: IATOP.C
+	$(CC) $(CFLAGS) /c IATOP.C
+
+IAC.obj: IAC.C
+	$(CC) $(CFLAGS) /c IAC.C
+
+PA.obj: PA.C
+	$(CC) $(CFLAGS) /c PA.C
+
+WEIGHTS.obj: WEIGHTS.C
+	$(CC) $(CFLAGS) /c WEIGHTS.C
+
+# Core library object files
+PATTERNS.obj: PATTERNS.C
+	$(CC) $(CFLAGS) /c PATTERNS.C
+
+MAIN.obj: MAIN.C
+	$(CC) $(CFLAGS) /c MAIN.C
+
+VARIABLE.obj: VARIABLE.C
+	$(CC) $(CFLAGS) /c VARIABLE.C
+
+TEMPLATE.obj: TEMPLATE.C
+	$(CC) $(CFLAGS) /c TEMPLATE.C
+
+GENERAL.obj: GENERAL.C
+	$(CC) $(CFLAGS) /c GENERAL.C
+
+DISPLAY.obj: DISPLAY.C
+	$(CC) $(CFLAGS) /c DISPLAY.C
+
+IO.obj: IO.C
+	$(CC) $(CFLAGS) /c IO.C
+
+COMMAND.obj: COMMAND.C
+	$(CC) $(CFLAGS) /c COMMAND.C
+
+# Executables
+$(AADEST)\aa.exe: AA.obj libpc.lib
+	link /nologo /OUT:$(AADEST)\aa.exe AA.obj $(LIBS)
+
+$(BPDEST)\bp.exe: BP.obj WEIGHTS.obj libpc.lib
+	link /nologo /OUT:$(BPDEST)\bp.exe BP.obj WEIGHTS.obj $(LIBS)
+
+$(CLDEST)\cl.exe: CL.obj libpc.lib
+	link /nologo /OUT:$(CLDEST)\cl.exe CL.obj $(LIBS)
+
+$(CSDEST)\cs.exe: CS.obj WEIGHTS.obj libpc.lib
+	link /nologo /OUT:$(CSDEST)\cs.exe CS.obj WEIGHTS.obj $(LIBS)
+
+$(IADEST)\ia.exe: IA.obj IAAUX.obj IATOP.obj libpc.lib
+	link /nologo /OUT:$(IADEST)\ia.exe IA.obj IAAUX.obj IATOP.obj $(LIBS)
+
+$(IACDEST)\iac.exe: IAC.obj WEIGHTS.obj libpc.lib
+	link /nologo /OUT:$(IACDEST)\iac.exe IAC.obj WEIGHTS.obj $(LIBS)
+
+$(PADEST)\pa.exe: PA.obj WEIGHTS.obj libpc.lib
+	link /nologo /OUT:$(PADEST)\pa.exe PA.obj WEIGHTS.obj $(LIBS)
+
+clean:
+	del /Q *.obj libpc.lib 2>nul
+	del /Q $(AADEST)\aa.exe $(BPDEST)\bp.exe $(CLDEST)\cl.exe 2>nul
+	del /Q $(CSDEST)\cs.exe $(IADEST)\ia.exe $(IACDEST)\iac.exe $(PADEST)\pa.exe 2>nul

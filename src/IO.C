@@ -65,13 +65,13 @@ extern int start_up;
 #ifdef CURSES
 
 #include <curses.h>
-#ifndef MSDOS
+#if !defined(MSDOS) && !defined(_WIN32)
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
 #endif
 
-#ifndef MSDOS
+#if !defined(MSDOS) && !defined(_WIN32)
 static int tty_state_saved = 0;
 static struct termios tty_state;
 static int tty_fd = -1;
@@ -79,7 +79,7 @@ static int tty_fd = -1;
 static int io_screen_active = 0;
 
 io_initscr() {
-#ifndef MSDOS
+#if !defined(MSDOS) && !defined(_WIN32)
     tty_state_saved = 0;
     if (tty_fd < 0) {
         tty_fd = open("/dev/tty", O_RDWR);
@@ -106,7 +106,7 @@ io_endwin() {
         endwin();
         io_screen_active = 0;
     }
-#ifndef MSDOS
+#if !defined(MSDOS) && !defined(_WIN32)
     else {
         if (tty_fd < 0) {
             tty_fd = open("/dev/tty", O_RDWR);
@@ -116,7 +116,7 @@ io_endwin() {
         }
     }
 #endif
-#ifndef MSDOS
+#if !defined(MSDOS) && !defined(_WIN32)
     if (tty_state_saved) {
         tcsetattr(tty_fd, TCSANOW, &tty_state);
     }
