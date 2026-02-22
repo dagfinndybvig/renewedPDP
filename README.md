@@ -50,7 +50,55 @@ Outputs:
 - core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - utility executables: `utils/plot`, `utils/colex`
 
+## Build (Windows / MSVC)
+
+Requires **Visual Studio 2022** with the **Desktop development with C++** workload installed.
+
+### Step 1 — Build PDCurses (one time)
+
+PDCurses is not committed to the repository; build it locally from the
+[PDCurses source](https://github.com/wmcbrine/PDCurses):
+
+```bat
+git clone --depth=1 https://github.com/wmcbrine/PDCurses.git pdcurses
+```
+
+Then, from a **Developer Command Prompt for VS 2022** (or after running `vcvars64.bat`):
+
+```bat
+cd pdcurses\wincon
+nmake /f Makefile.vc
+cd ..\..
+```
+
+### Step 2 — Build the PDP programs
+
+```bat
+cd src
+nmake /f Makefile.win
+```
+
+Outputs: `aa\aa.exe`, `bp\bp.exe`, `cl\cl.exe`, `cs\cs.exe`, `ia\ia.exe`, `iac\iac.exe`, `pa\pa.exe`
+
+### Running
+
+Change into the model directory and run the executable directly (requires an interactive console — input redirection is not supported by PDCurses):
+
+```bat
+cd iac
+iac.exe JETS.TEM JETS.STR
+```
+
+### Cleaning Windows build artifacts
+
+```bat
+cd src
+nmake /f Makefile.win clean
+```
+
 ## Portability changes applied to the C sources
+
+### Linux
 
 1. **Build flags updated** — `CFLAGS` set to `-std=gnu89 -fcommon`; removed `-ltermlib`; retained `-lcurses`
 2. **Case-compatibility links** — `linux_compat_links` make target creates lowercase symlinks for `*.C`/`*.H` files
@@ -58,6 +106,14 @@ Outputs:
 4. **Compile blockers fixed in `GENERAL.H` / `GENERAL.C`** — removed obsolete declarations conflicting with modern libc; added `stdlib.h`, `string.h`
 5. **Compile blocker fixed in `COLEX.C`** — renamed variable `inline` → `input_line`; added missing headers
 6. **`.gitignore`** — ignores generated objects, archives, symlinks, and built executables
+
+### Windows (MSVC)
+
+All Windows changes are guarded by `#ifdef _WIN32` / `#if !defined(_WIN32)` so the Linux build is completely unaffected.
+
+1. **`src/Makefile.win`** — new `nmake` build file; uses `cl.exe`, `lib.exe`, links PDCurses (wincon) + `user32.lib gdi32.lib advapi32.lib`
+2. **`src/GENERAL.H`** — skips `<strings.h>` (POSIX); maps `index → strchr` and `sleep(n) → Sleep(n*1000)` via forward-declared Win32 `Sleep()`
+3. **`src/IO.C`** — guards the four `#ifndef MSDOS` blocks around `termios.h`, `unistd.h`, `/dev/tty`, and `tcgetattr/tcsetattr` with an additional `&& !defined(_WIN32)` condition
 
 ## Note
 
