@@ -11,9 +11,7 @@ Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
 The original sources are late-1980s C code with DOS and early Unix assumptions. This repository essentailly keeps the historical codebase intact. The tweaked C version builds and runs on both Ubuntu/Linux and Windows.
 
-## C version
-
-The original C sources are preserved in `src/` and build cleanly on modern Linux and Windows. Pre-built binaries are available for both platforms (see **Packaging build artifacts** below).
+C sources are preserved in `src/`. Pre-built binaries are available for both platforms (see **Packaging build artifacts** below).
 
 ## Repository layout
 
