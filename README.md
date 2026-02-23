@@ -28,6 +28,15 @@ The original C sources are preserved in `src/` and build cleanly on modern Linux
 
 ## Build (Ubuntu/Linux)
 
+Clean object/library artifacts:
+
+Install curses development headers:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y libncurses-dev
+```
+
 From repository root:
 
 ```bash
@@ -40,6 +49,13 @@ Outputs:
 
 - core executables: `aa/aa`, `bp/bp`, `cl/cl`, `cs/cs`, `ia/ia`, `iac/iac`, `pa/pa`
 - utility executables: `utils/plot`, `utils/colex`
+
+Cleanup afterwards:
+
+```bash
+cd src
+make clean
+```
 
 ## Build (Windows / MSVC)
 
@@ -106,39 +122,7 @@ All Windows changes are guarded by `#ifdef _WIN32` / `#if !defined(_WIN32)` so t
 2. **`src/GENERAL.H`** — skips `<strings.h>` (POSIX); maps `index → strchr` and `sleep(n) → Sleep(n*1000)` via forward-declared Win32 `Sleep()`
 3. **`src/IO.C`** — guards the four `#ifndef MSDOS` blocks around `termios.h`, `unistd.h`, `/dev/tty`, and `tcgetattr/tcsetattr` with an additional `&& !defined(_WIN32)` condition
 
-## Notes on Linux
-
-Clean object/library artifacts:
-
-```bash
-cd src
-make clean
-```
-
-Install curses development headers:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y libncurses-dev
-```
-
-## Terminal recovery (if a TUI session wedges the shell — rare)
-
-```bash
-stty sane; tput rmcup 2>/dev/null || true; reset
-```
-
-## Smoke tests
-
-From repository root:
-
-```bash
-./scripts/smoke_all.sh    # bp + pa C binaries
-./scripts/smoke_bp.sh
-./scripts/smoke_pa.sh
-```
-
-## Packaging build artifacts
+## Packaging Linux build artifacts
 
 ```bash
 ./scripts/package_artifacts.sh
