@@ -148,6 +148,31 @@ To unpack on a target host:
 tar -xzf renewedPDP-linux-artifacts.tar.gz
 ```
 
+## Packaging Windows build artifacts
+
+After building with `nmake /f Makefile.win` (see **Build (Windows / MSVC)** above):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\package_artifacts_win.ps1
+# produces renewedPDP-windows-artifacts.zip
+```
+
+The ZIP contains `aa\aa.exe`, `bp\bp.exe`, `cl\cl.exe`, `cs\cs.exe`, `ia\ia.exe`, `iac\iac.exe`, `pa\pa.exe`.
+
+### Unpacking on a target host
+
+ZIP is natively supported — no additional software required.
+
+**Windows Explorer:** right-click `renewedPDP-windows-artifacts.zip` → *Extract All…* → set destination to the repository root.
+
+**PowerShell (any version ≥ 5, standard on Windows 10/11):**
+
+```powershell
+Expand-Archive -Path renewedPDP-windows-artifacts.zip -DestinationPath . -Force
+```
+
+Run that command from the repository root. The executables land directly in their model directories (`aa\aa.exe`, `iac\iac.exe`, etc.).
+
 ## Additional notes
 
 - The C codebase intentionally remains mostly K&R-style C. Compiler warnings are expected.
