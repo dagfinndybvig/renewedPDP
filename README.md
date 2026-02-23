@@ -9,7 +9,7 @@
 
 Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
-The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact. The C version builds and runs on both Ubuntu/Linux and Windows.
+The original sources are late-1980s C code with DOS and early Unix assumptions. This repository essentailly keeps the historical codebase intact. The tweaked C version builds and runs on both Ubuntu/Linux and Windows.
 
 ## C version
 
