@@ -13,7 +13,7 @@ The original sources are late-1980s C code with DOS and early Unix assumptions. 
 
 ## C version
 
-The original C sources are preserved in `src/` and build cleanly on modern Linux and Windows. A pre-built Linux tarball is included.
+The original C sources are preserved in `src/` and build cleanly on modern Linux and Windows. Pre-built binaries are available for both platforms (see **Packaging build artifacts** below).
 
 ## Repository layout
 
