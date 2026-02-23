@@ -1,8 +1,4 @@
 # renewedPDP
------- WORK IN PROGRESS -------
-
-Note: The modernized C version kinda works, but there has been issues with the terminal, so I'm attempting a port to Python in order to get fully modern I/O.
-
 
 `renewedPDP` is a preservation and modernisation project for the classic PDP software associated with:
 
@@ -13,19 +9,11 @@ Note: The modernized C version kinda works, but there has been issues with the t
 
 Read it here: https://web.stanford.edu/group/pdplab/originalpdphandbook/
 
-The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact while working towards a clean, modern Python port as the recommended way to run the models.
+The original sources are late-1980s C code with DOS and early Unix assumptions. This repository keeps the historical codebase intact. The C version builds and runs cleanly on both Linux and Windows.
 
-## C version (legacy / modification)
+## C version
 
-The original C sources are preserved in `src/` and remain buildable on modern Linux with the right tweaks. Use this if you need to reproduce the exact original terminal behaviour or compare against the Python port. A build for Ubuntu/Linux is included in compressed form.
-
-### Known issue
-
-Terminal recovery after quitting `iac` is improved but not yet fully reliable across all environments. The Python will not have this issue.
-
-Compiling it in your own environment might help.
-
-See [TODO.md](TODO.md) for current status and debugging notes.
+The original C sources are preserved in `src/` and build cleanly on modern Linux and Windows. A pre-built Linux tarball is included.
 
 ## Repository layout
 
@@ -131,13 +119,11 @@ sudo apt-get update
 sudo apt-get install -y libncurses-dev
 ```
 
-## Terminal recovery (if a TUI session wedges the shell)
+## Terminal recovery (if a TUI session wedges the shell — rare)
 
 ```bash
 stty sane; tput rmcup 2>/dev/null || true; reset
 ```
-
-Then press `Ctrl+J` once if needed.
 
 ## Smoke tests
 
@@ -169,9 +155,9 @@ tar -xzf renewedPDP-linux-artifacts.tar.gz
 - Binaries are dynamically linked; verify dependencies with `ldd aa/aa`.
 - For user-supplied filenames the C version attempts exact, uppercase, and lowercase variants in order, which helps with historical uppercase data files on case-sensitive Linux.
 
-# In progress: Python version
+# In progress (back burner): Python version
 
-A Python port is underway in the `pythonPDP/` folder. It is the **intended** way to run the models — inherently cross platform, no terminal quirks, no curses dependencies. Invocation is similar to the C originals.
+A Python port exists in the `pythonPDP/` folder but is not actively being developed. The C version is the primary and recommended way to run the models.
 
 ### Setup (one time)
 
