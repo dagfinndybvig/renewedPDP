@@ -28,8 +28,6 @@ The original C sources are preserved in `src/` and build cleanly on modern Linux
 
 ## Build (Ubuntu/Linux)
 
-Clean object/library artifacts:
-
 Install curses development headers:
 
 ```bash
