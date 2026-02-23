@@ -18,13 +18,13 @@ The original C sources are preserved in `src/` and build cleanly on modern Linux
 ## Repository layout
 
 - `src/`: core C sources, headers, and Makefiles
-- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and built executable output locations
-- `utils/`: utility tool outputs (`plot`, `colex`) — also contains `COLEX.EXE` and `PLOT.EXE`, which are the **original MS-DOS binaries** (runnable in DOSBox)
+- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data files (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) — executables are **not** stored here; populate by building from source or unpacking a prebuilt ZIP (see below)
+- `utils/`: contains `COLEX.EXE` and `PLOT.EXE`, which are **original MS-DOS binaries** (runnable in [DOSBox](https://www.dosbox.com/))
 - `COLEX.EXE` (repo root): original MS-DOS binary, same as `utils/COLEX.EXE`
 - `pythonPDP/`: Python port, tests, and migration planning documents
-- `*.ARC`: archived original DOS distribution artifacts (extractable with `ARCE.COM` in DOSBox)
+- `*.ARC`: archived original DOS distribution (extractable with `ARCE.COM` in DOSBox)
 
-> **Note on DOS binaries:** `utils/COLEX.EXE`, `utils/PLOT.EXE`, and `COLEX.EXE` at the repository root are original late-1980s MS-DOS executables. They are preserved for historical reference and run under [DOSBox](https://www.dosbox.com/). They are **not** affected by the modern Windows build or the prebuilt ZIP — the Windows build outputs lowercase-named executables (`aa.exe`, `bp.exe`, …) into the model subdirectories, which are entirely separate files.
+> **Original DOS version:** The original 1980s MS-DOS software is available from the PDP Lab at Stanford: <https://web.stanford.edu/group/pdplab/resources.html>. The `.ARC` files in this repository are those original archives. `utils/COLEX.EXE`, `utils/PLOT.EXE`, and root `COLEX.EXE` are DOS executables from that distribution, preserved here for reference.
 
 ## Build (Ubuntu/Linux)
 
@@ -145,7 +145,7 @@ From repository root:
 # produces renewedPDP-linux-artifacts.tar.gz
 ```
 
-To unpack on a target host:
+To unpack on a target host (executables are not stored in the repo — unpack after cloning):
 
 ```bash
 tar -xzf renewedPDP-linux-artifacts.tar.gz
@@ -163,6 +163,8 @@ powershell -ExecutionPolicy Bypass -File scripts\package_artifacts_win.ps1
 The ZIP contains `aa\aa.exe`, `bp\bp.exe`, `cl\cl.exe`, `cs\cs.exe`, `ia\ia.exe`, `iac\iac.exe`, `pa\pa.exe`.
 
 ### Unpacking on a target host
+
+> **Fresh clone:** executables are not stored in the repository. After cloning, unpack the prebuilt ZIP (or build from source) to populate the model directories.
 
 ZIP is natively supported — no additional software required.
 
