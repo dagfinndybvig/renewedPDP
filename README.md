@@ -18,10 +18,13 @@ The original C sources are preserved in `src/` and build cleanly on modern Linux
 ## Repository layout
 
 - `src/`: core C sources, headers, and Makefiles
-- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and C executable output locations
-- `utils/`: utility tool outputs (`plot`, `colex`)
+- `aa/`, `bp/`, `cl/`, `cs/`, `ia/`, `iac/`, `pa/`: model data (`.PAT`, `.STR`, `.TEM`, `.NET`, etc.) and built executable output locations
+- `utils/`: utility tool outputs (`plot`, `colex`) — also contains `COLEX.EXE` and `PLOT.EXE`, which are the **original MS-DOS binaries** (runnable in DOSBox)
+- `COLEX.EXE` (repo root): original MS-DOS binary, same as `utils/COLEX.EXE`
 - `pythonPDP/`: Python port, tests, and migration planning documents
-- `*.ARC`: archived original distribution artifacts
+- `*.ARC`: archived original DOS distribution artifacts (extractable with `ARCE.COM` in DOSBox)
+
+> **Note on DOS binaries:** `utils/COLEX.EXE`, `utils/PLOT.EXE`, and `COLEX.EXE` at the repository root are original late-1980s MS-DOS executables. They are preserved for historical reference and run under [DOSBox](https://www.dosbox.com/). They are **not** affected by the modern Windows build or the prebuilt ZIP — the Windows build outputs lowercase-named executables (`aa.exe`, `bp.exe`, …) into the model subdirectories, which are entirely separate files.
 
 ## Build (Ubuntu/Linux)
 
